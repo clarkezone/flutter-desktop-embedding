@@ -38,9 +38,12 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, LPWSTR args, int) {
 
       ////////////////////////////////////////////////////////////////////////////////////////////////////
 
-      "C:\\Users\\james\\source\\clarkezone\\flutter\\examples\\hello_"
-      "world\\build\\flutter_"
-      "assets";
+      /* "C:\\Users\\james\\source\\github.com\\clarkezone\\flutter\\examples\\hello_"
+       "world\\build\\flutter_"
+       "assets";*/
+
+      "C:\\Users\\james\\Source\\github.com\\clarkezone\\flutter-desktop-"
+      "embedding\\example_flutter\\build\\flutter_assets";
 
       /*"C:\\Users\\james\\source\\github.com\\google\\flutter-desktop-"
       "embedding\\example_flutter\\build\\flutter_assets";*/

@@ -67,11 +67,11 @@ LRESULT FlutterWindow::MessageHandler(UINT const message, WPARAM const wparam,
 
 void FlutterWindow::PrepareVisuals() {
   Compositor compositor;
-  m_target = CreateDesktopWindowTarget(compositor, mWindow);
+  //m_target = CreateDesktopWindowTarget(compositor, mWindow);
   auto root = compositor.CreateSpriteVisual();
   root.RelativeSizeAdjustment({1.0f, 1.0f});
   root.Brush(compositor.CreateColorBrush({0xFF, 0xEF, 0xE4, 0xB0}));
-  m_target.Root(root);
+  //m_target.Root(root);
   m_visuals = root.Children();
 
   AddVisual(m_visuals, mCurrentWidth, mCurrentHeight);
@@ -84,11 +84,13 @@ void FlutterWindow::AddVisual(VisualCollection const &visuals, float width,
 
   visual.Size({width, height});
 
-  visual.Brush(compositor.CreateColorBrush(Windows::UI::Colors::Red()));
+  //visual.Brush(compositor.CreateColorBrush(Windows::UI::Colors::Red()));
 
-  m_visuals.InsertAtTop(visual);
+  //m_visuals.InsertAtTop(visual);
+  m_visuals.InsertAtBottom(visual);
 
-  m_engine = std::make_unique<FlutterEngineHost>(visual, mCurrentDpi);
+m_engine = std::make_unique<FlutterEngineHost>(visual, mCurrentDpi, mWindow);
+ // m_engine = std::make_unique<FlutterEngineHost>(nullptr, mCurrentDpi, mWindow);
 }
 
 void FlutterWindow::FlutterMessageLoop() {

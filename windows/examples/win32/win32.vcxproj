@@ -32,7 +32,7 @@
   </ItemGroup>
   <PropertyGroup Label="ANGLE">
     <AngleIncPath Condition=" '$(AngleIncPath)' == '' ">$(AngleRootPath)\include\</AngleIncPath>
-    <AngleBinPath Condition=" '$(AngleBinPath)' == '' ">$(AngleRootPath)\src\$(Configuration)_$(Platform)\</AngleBinPath>
+    <AngleBinPath Condition=" '$(AngleBinPath)' == '' ">$(AngleRootPath)\out\debug</AngleBinPath>
   </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
@@ -82,7 +82,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(AngleBinPath)lib\libGLESv2_static.lib;$(AngleBinPath)lib\libEGL_static.lib;$(AngleBinPath)lib\angle_common.lib;$(AngleBinPath)lib\angle_gpu_info_util.lib;$(AngleBinPath)lib\angle_image_util.lib;$(AngleBinPath)lib\libANGLE.lib;$(AngleBinPath)lib\preprocessor.lib;$(AngleBinPath)lib\translator.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;user32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies);flutter_engine.dll.lib</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(AngleBinPath)\libGLESv2.dll.lib;$(AngleBinPath)\libEGL.dll.lib;kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;user32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib;d3d9.lib;dxguid.lib;%(AdditionalDependencies);flutter_engine.dll.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(SolutionDir)..\..\lib\windows-x64-embedder;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>

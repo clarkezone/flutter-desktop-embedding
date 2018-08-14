@@ -2,8 +2,8 @@
 #include "FlutterEngineHost.h"
 
 FlutterEngineHost::FlutterEngineHost(const SpriteVisual &hostVisual,
-                                     double hostDpi)
-    : mEngineConfigured(false) {
+                                     double hostDpi, HWND hostHwnd)
+    : mEngineConfigured(false), mWindow(hostHwnd){
   mOpenGLES = std::make_unique<OpenGLES>();
   mHostVisual = hostVisual;
 
@@ -61,7 +61,9 @@ bool FlutterEngineHost::ConfigureFlutterEngine(
     return false;
   };
 
-  cfg.GLGetEntrypointByName =
+  //cfg.get_entrypoint_by_name = nullptr;
+
+  cfg.get_entrypoint_by_name =
 	  [](void *userData, const char* what) -> void* {
     return eglGetProcAddress(what);
     //OutputDebugString(L"");
@@ -117,7 +119,9 @@ void FlutterEngineHost::SwapBuffers() {
 
 void FlutterEngineHost::CreateRenderSurface() {
   if (mOpenGLES && mRenderSurface == EGL_NO_SURFACE) {
-    mRenderSurface = mOpenGLES->CreateSurface(mHostVisual);
+    //mRenderSurface = mOpenGLES->CreateSurface(mHostVisual);
+    mRenderSurface = mOpenGLES->CreateSurface(mWindow);
+	  
   }
 }
 

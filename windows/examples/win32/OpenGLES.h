@@ -9,6 +9,7 @@ public:
     ~OpenGLES();
 
 	EGLSurface CreateSurface(winrt::Windows::UI::Composition::ISpriteVisual & visual);
+    EGLSurface CreateSurface(HWND window);
     void GetSurfaceDimensions(const EGLSurface surface, EGLint *width, EGLint *height);
     void DestroySurface(const EGLSurface surface);
     void MakeCurrent(const EGLSurface surface);

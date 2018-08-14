@@ -5,7 +5,7 @@ using namespace winrt;
 using namespace Windows::UI::Composition;
 
 struct FlutterEngineHost {
-  FlutterEngineHost(const SpriteVisual &hostVisual, double hostDpi);
+  FlutterEngineHost(const SpriteVisual &hostVisual, double hostDpi, HWND hostHwnd);
   ~FlutterEngineHost();
   bool ConfigureFlutterEngine(const std::string &,
                               const std::string &,
@@ -39,4 +39,5 @@ struct FlutterEngineHost {
   int mHostWidth, mHostHeight;
   int mHostDpi;
   bool mPointerDown;
+  HWND mWindow;
 };

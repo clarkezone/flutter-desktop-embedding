@@ -140,7 +140,7 @@ xcopy /y /d /q "$(SolutionDir)Dependencies\clarkezone_engine\flutter_engine.dll.
 xcopy /y /d /q "$(SolutionDir)Dependencies\clarkezone_engine\icudtl.dat" "$(OutputPath)"
 xcopy /y /d /q "$(SolutionDir)Dependencies\Angle\libegl.dll" "$(OutputPath)"
 xcopy /y /d /q "$(SolutionDir)Dependencies\Angle\libglesv2.dll" "$(OutputPath)"
-xcopy /y /e /q "$(SolutionDir)..\example_flutter\build" "$(OutputPath)"</Command>
+xcopy /y /e /q "$(SolutionDir)..\example_flutter\build" "$(OutputPath)build\"</Command>
       <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copy flutter and angle binaries</Message>
     </PreLinkEvent>
     <PostBuildEvent>

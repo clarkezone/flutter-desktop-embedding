@@ -30,10 +30,6 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <PropertyGroup Label="ANGLE">
-    <AngleIncPath Condition=" '$(AngleIncPath)' == '' ">$(AngleRootPath)\include\</AngleIncPath>
-    <AngleBinPath Condition=" '$(AngleBinPath)' == '' ">$(AngleRootPath)\out\debug</AngleBinPath>
-  </PropertyGroup>
   <PropertyGroup Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <PlatformToolset>v141</PlatformToolset>
@@ -60,6 +56,10 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>$(SolutionDir)dependencies\engine\;$(IncludePath)</IncludePath>
     <LibraryPath>$(SolutionDir)dependencies\engine\;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)dependencies\clarkezone_engine\;$(SolutionDir)dependencies\Angle;</IncludePath>
+    <LibraryPath>$(VC_LibraryPath_x64);$(WindowsSDK_LibraryPath_x64);$(NETFXKitsDir)Lib\um\x64;$(SolutionDir)dependencies\Angle;$(SolutionDir)dependencies\clarkezone_engine\</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -116,7 +116,7 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(AngleBinPath)lib\libGLESv2.lib;$(AngleBinPath)lib\libEGL.lib;kernel32.lib;user32.lib;%(AdditionalDependencies);flutter_engine.dll.lib;</AdditionalDependencies>
+      <AdditionalDependencies Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(AngleBinPath)libGLESv2.dll.lib;$(AngleBinPath)libEGL.dll.lib;kernel32.lib;user32.lib;%(AdditionalDependencies);flutter_engine.dll.lib;</AdditionalDependencies>
     </Link>
     <Manifest>
       <AdditionalManifestFiles Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(TargetName)$(TargetExt).manifest</AdditionalManifestFiles>
@@ -127,6 +127,28 @@
     <ManifestResourceCompile>
       <ResourceOutputFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)$(TargetName)$(TargetExt).embed.manifest.res</ResourceOutputFileName>
     </ManifestResourceCompile>
+    <PreBuildEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(SolutionDir)scripts\get_angle_dll.bat $(SolutionDir) $(PlatformArchitecture)
+</Command>
+    </PreBuildEvent>
+    <PreBuildEvent>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Get Angle DLL</Message>
+    </PreBuildEvent>
+    <PreLinkEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">xcopy /y /d /q "$(SolutionDir)Dependencies\clarkezone_engine\flutter_engine.dll" "$(OutputPath)"
+xcopy /y /d /q "$(SolutionDir)Dependencies\clarkezone_engine\flutter_engine.dll.pdb" "$(OutputPath)"
+xcopy /y /d /q "$(SolutionDir)Dependencies\clarkezone_engine\icudtl.dat" "$(OutputPath)"
+xcopy /y /d /q "$(SolutionDir)Dependencies\Angle\libegl.dll" "$(OutputPath)"
+xcopy /y /d /q "$(SolutionDir)Dependencies\Angle\libglesv2.dll" "$(OutputPath)"
+xcopy /y /e /q "$(SolutionDir)..\example_flutter\build" "$(OutputPath)"</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Copy flutter and angle binaries</Message>
+    </PreLinkEvent>
+    <PostBuildEvent>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </Message>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="ConsoleWindow.h" />

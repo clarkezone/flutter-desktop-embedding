@@ -28,49 +28,7 @@ std::vector<string> ParseCmd(LPWSTR args) {
 
 int __stdcall wWinMain(HINSTANCE, HINSTANCE, LPWSTR args, int) {
   const string flutter_example_assets =
-
-      // TODO: prebuild step for the example
-
-      // Use this command to build against release engine:
-      // flutter build bundle --local-engine=host_release
-      // --local-engine-src-path
-      // /users/james/source/github.com/clarkezone/flutter/engine/src
-
-      ////////////////////////////////////////////////////////////////////////////////////////////////////
-
-      /* "C:\\Users\\james\\source\\github.com\\clarkezone\\flutter\\examples\\hello_"
-       "world\\build\\flutter_"
-       "assets";*/
-
-      "C:\\Users\\james\\Source\\github.com\\clarkezone\\flutter-desktop-"
-      "embedding\\example_flutter\\build\\flutter_assets";
-
-      /*"C:\\Users\\james\\source\\github.com\\google\\flutter-desktop-"
-      "embedding\\example_flutter\\build\\flutter_assets";*/
-
-	  /*"C:\\Users\\james\\source\\flutter\\examples\\flutter_gallery\\build\\flutter_assets";*/
-
-	  /*"C:\\Users\\james\\source\\github.com\\2d-inc\\Nima-Flutter\\example\\build\\flutter_assets";*/
-  
-	  ///////////////////////////////////////////////////////////////////////////////////////////////////
-		 /// not working
-	  
-			  /*"C:\\Users\\james\\source\\github."
-		  "com\\spritewidget\\spritewidget\\example\\weather\\build\\flutter_"
-		  "assets";*/
-  
-		  /*"C:\\Users\\james\\source\\github.com\\spritewidget\\spaceblast\\build\\flutter_"
-		  "assets";*/
-		  /*"C:\\Users\\james\\source\\github."
-		  "com\\spritewidget\\spritewidget\\example\\fitness\\build\\flutter_assets";*/
-
-		  /*   "C:\\Users\\james\\source\\github."
-			 "com\\spritewidget\\spritewidget\\example\\particledesigner\\build\\flutt"
-			 "er_assets";*/
-		  /*"C:\\Users\\james\\source\\github.com\\clarkezone\\flutter-desktop-"
-		  "embedding\\example_flutter\\build";*/
-  
-			  /*"C:\\Users\\james\\source\\github.com\\flutter\\posse_gallery\\build\\flutter_assets";*/
+      "build\\flutter_assets";
 
   init_apartment();
   auto cmdlineargs = ParseCmd(args);

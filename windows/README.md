@@ -49,3 +49,17 @@ example application automatically.
   final state for Windows support.
 * Text input does not work yet.
 * Plugins are not currently supported.
+
+## Angle as an alternative to GLFW: Addendum for Clarkezone fork
+
+This fork of the Desktop Embedder project contains a proof-of-concept implementation of the Windows Desktop Embedder running on Angle rather than on GLFW and the Windows OpenGL backend.  It is currently living side-by-side with the GLFW version in a parallel Examples directory.  In order to build and run that version, you'll first need to build a custom version of the Flutter Engine first from here: 
+
+https://github.com/clarkezone/engine.git
+
+You'll need to rebase on the appropriate engine.stamp hash that matches the version of Flutter you have installed.  This fork of the Flutter Engine contains a change with the necessary hook to support Angle.  It also enables modern Windows Compositor integration using SpriteVisual.
+
+At present, the Angle dependency is fetched in binary form as a DLL from a custom fork of Angle which has also been enlightened about with modern compositor hosting and SpriteVisual.  This change is in the process of being contributed to the Angle upstream.  It is available here:
+
+https://github.com/clarkezone/angle-1/
+
+Once the Desktop Embedder project moves to GN, and the Angle project accepts the SpriteVisual contribution, the dependency can be fulfilled in source from and statically linked into the embedder project.

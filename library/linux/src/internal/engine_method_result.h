@@ -19,8 +19,8 @@
 
 #include <flutter_embedder.h>
 
-#include "library/linux/include/flutter_desktop_embedding/method_codec.h"
-#include "library/linux/include/flutter_desktop_embedding/method_result.h"
+#include "../../../linux/include/flutter_desktop_embedding/method_codec.h"
+#include "../../../linux/include/flutter_desktop_embedding/method_result.h"
 
 namespace flutter_desktop_embedding {
 

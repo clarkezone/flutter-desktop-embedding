@@ -20,7 +20,7 @@
 
 #include <flutter_embedder.h>
 
-#include "library/linux/include/flutter_desktop_embedding/plugin.h"
+#include "../../../linux/include/flutter_desktop_embedding/plugin.h"
 
 namespace flutter_desktop_embedding {
 

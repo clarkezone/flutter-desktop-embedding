@@ -11,9 +11,9 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "library/linux/include/flutter_desktop_embedding/plugin.h"
+#include "../../linux/include/flutter_desktop_embedding/plugin.h"
 
-#include "library/linux/include/flutter_desktop_embedding/json_method_codec.h"
+//#include "../../linux/include/flutter_desktop_embedding/json_method_codec.h"
 
 namespace flutter_desktop_embedding {
 
@@ -28,12 +28,14 @@ void Plugin::InvokeMethodCall(const MethodCall &method_call) {
   }
   std::unique_ptr<std::vector<uint8_t>> message =
       GetCodec().EncodeMethodCall(method_call);
-  FlutterPlatformMessage platform_message_response = {
-      .struct_size = sizeof(FlutterPlatformMessage),
-      .channel = channel_.c_str(),
-      .message = message->data(),
-      .message_size = message->size(),
-  };
+  FlutterPlatformMessage platform_message_response = {};
+  platform_message_response.struct_size = sizeof(FlutterPlatformMessage);
+  platform_message_response.channel = channel_.c_str();
+  platform_message_response.message = message->data();
+  
+  //TODO
+  //platform_message_response.message_size = message->size();
+  //};
   FlutterEngineSendPlatformMessage(engine_, &platform_message_response);
 }
 

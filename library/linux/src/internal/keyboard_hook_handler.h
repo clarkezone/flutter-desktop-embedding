@@ -14,7 +14,7 @@
 #ifndef LIBRARY_LINUX_SRC_INTERNAL_INPUT_KEYBOARD_HOOK_HANDLER_H_
 #define LIBRARY_LINUX_SRC_INTERNAL_INPUT_KEYBOARD_HOOK_HANDLER_H_
 
-#include <GLFW/glfw3.h>
+#include <glfw3.h>
 
 namespace flutter_desktop_embedding {
 

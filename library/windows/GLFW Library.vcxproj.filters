@@ -18,9 +18,60 @@
     <ClCompile Include="embedder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\linux\src\method_call.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\linux\src\method_codec.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\linux\src\method_result.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\linux\src\plugin.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\linux\src\internal\plugin_handler.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\linux\src\internal\engine_method_result.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="text_input_plugin_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_method_call_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="text_input_model_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="embedder.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\linux\include\flutter_desktop_embedding\plugin.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\linux\include\flutter_desktop_embedding\method_call.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\linux\include\flutter_desktop_embedding\method_codec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\linux\include\flutter_desktop_embedding\method_result.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="text_input_plugin_win.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json_plugin_win.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json_method_call_win.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="text_input_model_win.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -17,23 +17,23 @@
 #include <map>
 #include <memory>
 
-#include "../../../linux/include/flutter_desktop_embedding/json_plugin.h"
+#include "json_plugin_win.h"
 #include "../../../linux/src/internal/keyboard_hook_handler.h"
-#include "../../../linux/src/internal/text_input_model.h"
+#include "text_input_model_win.h"
 
 namespace flutter_desktop_embedding {
 
 // Implements a text input plugin.
 //
 // Specifically handles window events within GLFW.
-class TextInputPlugin : public KeyboardHookHandler, public JsonPlugin {
+class TextInputPluginWin : public KeyboardHookHandler { //, public JsonPluginWin {
  public:
-  TextInputPlugin();
-  virtual ~TextInputPlugin();
+  TextInputPluginWin();
+  virtual ~TextInputPluginWin();
 
   // Plugin.
-  void HandleJsonMethodCall(const JsonMethodCall &method_call,
-                            std::unique_ptr<MethodResult> result) override;
+  /*void HandleJsonMethodCall(const JsonMethodCallWin &method_call,
+                            std::unique_ptr<MethodResult> result) override;*/
 
   // KeyboardHookHandler.
   void KeyboardHook(GLFWwindow *window, int key, int scancode, int action,
@@ -44,16 +44,13 @@ class TextInputPlugin : public KeyboardHookHandler, public JsonPlugin {
 
  private:
   // Sends the current state of the given model to the Flutter engine.
-  void SendStateUpdate(const TextInputModel &model);
-
-  // Sends an action triggered by the Enter key to the Flutter engine.
-  void EnterPressed(const TextInputModel &model);
+  void SendStateUpdate(const TextInputModelWin &model);
 
   // Mapping of client IDs to text input models.
-  std::map<int, std::unique_ptr<TextInputModel>> input_models_;
+  std::map<int, std::unique_ptr<TextInputModelWin>> input_models_;
 
   // The active model. nullptr if not set.
-  TextInputModel *active_model_;
+  TextInputModelWin *active_model_;
 };
 
 }  // namespace flutter_desktop_embedding

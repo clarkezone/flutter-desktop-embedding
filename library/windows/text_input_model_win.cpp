@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-#include "../../../linux/src/internal/text_input_model.h"
+#include "text_input_model_win.h"
 
 #include <iostream>
 
@@ -32,15 +32,15 @@ static constexpr char kTextKey[] = "text";
 
 namespace flutter_desktop_embedding {
 
-TextInputModel::TextInputModel(int client_id)
+TextInputModelWin::TextInputModelWin(int client_id)
     : text_(""),
       client_id_(client_id),
       selection_base_(text_.begin()),
       selection_extent_(text_.begin()) {}
 
-TextInputModel::~TextInputModel() {}
+TextInputModelWin::~TextInputModelWin() {}
 
-bool TextInputModel::SetEditingState(size_t selection_base,
+bool TextInputModelWin::SetEditingState(size_t selection_base,
                                      size_t selection_extent,
                                      const std::string &text) {
   if (selection_base > selection_extent) {
@@ -56,13 +56,13 @@ bool TextInputModel::SetEditingState(size_t selection_base,
   return true;
 }
 
-void TextInputModel::DeleteSelected() {
+void TextInputModelWin::DeleteSelected() {
   selection_base_ = text_.erase(selection_base_, selection_extent_);
   // Moves extent back to base, so that it is a single cursor placement again.
   selection_extent_ = selection_base_;
 }
 
-void TextInputModel::AddCharacter(char c) {
+void TextInputModelWin::AddCharacter(char c) {
   if (selection_base_ != selection_extent_) {
     DeleteSelected();
   }
@@ -71,7 +71,7 @@ void TextInputModel::AddCharacter(char c) {
   selection_base_ = selection_extent_;
 }
 
-bool TextInputModel::Backspace() {
+bool TextInputModelWin::Backspace() {
   if (selection_base_ != selection_extent_) {
     DeleteSelected();
     return true;
@@ -84,7 +84,7 @@ bool TextInputModel::Backspace() {
   return false;  // No edits happened.
 }
 
-bool TextInputModel::Delete() {
+bool TextInputModelWin::Delete() {
   if (selection_base_ != selection_extent_) {
     DeleteSelected();
     return true;
@@ -97,17 +97,17 @@ bool TextInputModel::Delete() {
   return false;
 }
 
-void TextInputModel::MoveCursorToBeginning() {
+void TextInputModelWin::MoveCursorToBeginning() {
   selection_base_ = text_.begin();
   selection_extent_ = text_.begin();
 }
 
-void TextInputModel::MoveCursorToEnd() {
+void TextInputModelWin::MoveCursorToEnd() {
   selection_base_ = text_.end();
   selection_extent_ = text_.end();
 }
 
-bool TextInputModel::MoveCursorForward() {
+bool TextInputModelWin::MoveCursorForward() {
   // If about to move set to the end of the highlight (when not selecting).
   if (selection_base_ != selection_extent_) {
     selection_base_ = selection_extent_;
@@ -122,7 +122,7 @@ bool TextInputModel::MoveCursorForward() {
   return false;
 }
 
-bool TextInputModel::MoveCursorBack() {
+bool TextInputModelWin::MoveCursorBack() {
   // If about to move set to the beginning of the highlight
   // (when not selecting).
   if (selection_base_ != selection_extent_) {
@@ -138,25 +138,26 @@ bool TextInputModel::MoveCursorBack() {
   return false;
 }
 
-Json::Value TextInputModel::GetState() const {
+JsonValue TextInputModelWin::GetState() const {
   // TODO(awdavies): Most of these are hard-coded for now.
-  Json::Value editing_state;
-  editing_state[kComposingBaseKey] = -1;
-  editing_state[kComposingExtentKey] = -1;
-  editing_state[kSelectionAffinityKey] = kAffinityDownstream;
-  editing_state[kSelectionBaseKey] =
-      static_cast<int>(selection_base_ - text_.begin());
-  editing_state[kSelectionExtentKey] =
-      static_cast<int>(selection_extent_ - text_.begin());
-  editing_state[kSelectionIsDirectionalKey] = false;
-  editing_state[kTextKey] = text_;
+  //JsonValue editing_state;
+  //editing_state[kComposingBaseKey] = -1;
+  //editing_state[kComposingExtentKey] = -1;
+  //editing_state[kSelectionAffinityKey] = kAffinityDownstream;
+  //editing_state[kSelectionBaseKey] =
+  //    static_cast<int>(selection_base_ - text_.begin());
+  //editing_state[kSelectionExtentKey] =
+  //    static_cast<int>(selection_extent_ - text_.begin());
+  //editing_state[kSelectionIsDirectionalKey] = false;
+  //editing_state[kTextKey] = text_;
 
-  // TODO(stuartmorgan): Move client_id out up to the plugin so that this
-  // function just returns the editing state.
-  Json::Value args = Json::arrayValue;
-  args.append(client_id_);
-  args.append(editing_state);
-  return args;
+  //// TODO(stuartmorgan): Move client_id out up to the plugin so that this
+  //// function just returns the editing state.
+  //JsonValue args = Json::arrayValue;
+  //args.append(client_id_);
+  //args.append(editing_state);
+  //return args;
+  return nullptr;
 }
 
 }  // namespace flutter_desktop_embedding

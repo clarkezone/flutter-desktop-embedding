@@ -45,6 +45,12 @@
     <ClCompile Include="text_input_model_win.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="json_plugin_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="json_method_codec_win.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="embedder.h">
@@ -72,6 +78,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="text_input_model_win.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="json_method_codec_win.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

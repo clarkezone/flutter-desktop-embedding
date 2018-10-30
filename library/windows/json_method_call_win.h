@@ -28,7 +28,7 @@ class JsonMethodCallWin : public MethodCall {
  public:
   // Creates a MethodCall with the given name and, optionally, arguments.
   explicit JsonMethodCallWin(const std::string &method_name,
-                          const JsonValue &arguments); // const JsonValue &arguments = Json::Value());
+                          const JsonObject &arguments); // const JsonValue &arguments = Json::Value());
   ~JsonMethodCallWin();
 
   // Prevent copying.
@@ -43,10 +43,10 @@ class JsonMethodCallWin : public MethodCall {
   // Returns a reference to the object pointed to by arguments().
   // This is a convience method for code that is interacting directly with a
   // JsonMethodCall to avoid casting and dereferencing.
-  const JsonValue &GetArgumentsAsJson() const;
+  const JsonObject &GetArgumentsAsJson() const;
 
  private:
-  JsonValue arguments_;
+  JsonObject arguments_;
 };
 
 }  // namespace flutter_desktop_embedding

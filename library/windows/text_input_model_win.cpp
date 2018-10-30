@@ -30,10 +30,15 @@ static constexpr char kSelectionIsDirectionalKey[] = "selectionIsDirectional";
 
 static constexpr char kTextKey[] = "text";
 
+static constexpr char kClientId[] = "clientid";
+
+static constexpr char kEditingState[] = "editingState";
+
+
 namespace flutter_desktop_embedding {
 
 TextInputModelWin::TextInputModelWin(int client_id)
-    : text_(""),
+    : text_(L""),
       client_id_(client_id),
       selection_base_(text_.begin()),
       selection_extent_(text_.begin()) {}
@@ -42,7 +47,7 @@ TextInputModelWin::~TextInputModelWin() {}
 
 bool TextInputModelWin::SetEditingState(size_t selection_base,
                                      size_t selection_extent,
-                                     const std::string &text) {
+                                     const std::wstring_view &text) {
   if (selection_base > selection_extent) {
     return false;
   }
@@ -50,7 +55,7 @@ bool TextInputModelWin::SetEditingState(size_t selection_base,
   if (selection_extent > text.size()) {
     return false;
   }
-  text_ = std::string(text);
+  text_ = std::wstring(text);
   selection_base_ = text_.begin() + selection_base;
   selection_extent_ = text_.begin() + selection_extent;
   return true;
@@ -138,26 +143,36 @@ bool TextInputModelWin::MoveCursorBack() {
   return false;
 }
 
-JsonValue TextInputModelWin::GetState() const {
+//TODO: can i make this an ijsonvalue?
+JsonObject TextInputModelWin::GetState() const {
   // TODO(awdavies): Most of these are hard-coded for now.
-  //JsonValue editing_state;
-  //editing_state[kComposingBaseKey] = -1;
-  //editing_state[kComposingExtentKey] = -1;
-  //editing_state[kSelectionAffinityKey] = kAffinityDownstream;
-  //editing_state[kSelectionBaseKey] =
-  //    static_cast<int>(selection_base_ - text_.begin());
-  //editing_state[kSelectionExtentKey] =
-  //    static_cast<int>(selection_extent_ - text_.begin());
-  //editing_state[kSelectionIsDirectionalKey] = false;
-  //editing_state[kTextKey] = text_;
-
-  //// TODO(stuartmorgan): Move client_id out up to the plugin so that this
-  //// function just returns the editing state.
-  //JsonValue args = Json::arrayValue;
-  //args.append(client_id_);
-  //args.append(editing_state);
-  //return args;
-  return nullptr;
+  JsonObject editing_state;
+  editing_state.SetNamedValue(to_hstring(kComposingBaseKey), // to_hastring required as kComposingBaseKey is 8 bit char
+                              JsonValue::CreateNumberValue(-1));
+  editing_state.SetNamedValue(to_hstring(kComposingExtentKey),
+                              JsonValue::CreateNumberValue(-1));
+  editing_state.SetNamedValue(to_hstring(kSelectionAffinityKey),
+      JsonValue::CreateStringValue(to_hstring(kAffinityDownstream)));
+  editing_state.SetNamedValue(
+      to_hstring(kSelectionBaseKey),
+                              JsonValue::CreateNumberValue(static_cast<int>(
+                                  selection_base_ - text_.begin())));
+  editing_state.SetNamedValue(to_hstring(kSelectionExtentKey),
+                              JsonValue::CreateNumberValue(static_cast<int>(
+                                  selection_extent_ - text_.begin())));
+  editing_state.SetNamedValue(to_hstring(kSelectionIsDirectionalKey),
+                              JsonValue::CreateBooleanValue(false));
+  editing_state.SetNamedValue(
+      to_hstring(kTextKey),
+                              JsonValue::CreateStringValue(text_));
+ 
+  // TODO(stuartmorgan): Move client_id out up to the plugin so that this
+  // function just returns the editing state.
+  JsonObject args;
+  args.SetNamedValue(to_hstring(kClientId),
+                     JsonValue::CreateNumberValue(client_id_));
+  args.SetNamedValue(to_hstring(kEditingState), editing_state);
+  return args;
 }
 
 }  // namespace flutter_desktop_embedding

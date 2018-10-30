@@ -201,9 +201,10 @@ GLFWwindow *CreateFlutterWindow(size_t initial_width, size_t initial_height,
   }
 
   FlutterEmbedderState *state = new FlutterEmbedderState();
-  state->plugin_handler = std::make_unique<flutter_desktop_embedding::PluginHandler>(engine);
+  //state->plugin_handler = std::make_unique<flutter_desktop_embedding::PluginHandler>(engine);
   state->engine = engine;
-  /*auto input_plugin = std::make_unique<TextInputPlugin>();
+  /*auto input_plugin =
+      std::make_unique<flutter_desktop_embedding::TextInputPluginWin>();
   state->keyboard_hook_handlers.push_back(input_plugin.get());*/
 
   glfwSetWindowUserPointer(window, state);

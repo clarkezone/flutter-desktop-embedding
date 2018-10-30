@@ -36,6 +36,8 @@ static constexpr char kBadArgumentError[] = "Bad Arguments";
 static constexpr char kInternalConsistencyError[] =
     "Internal Consistency Error";
 
+static constexpr char kClientId[] = "clientid";
+
 static constexpr uint32_t kInputModelLimit = 256;
 
 namespace flutter_desktop_embedding {
@@ -91,88 +93,88 @@ void TextInputPluginWin::KeyboardHook(GLFWwindow *window, int key, int scancode,
   }
 }
 
-TextInputPluginWin::TextInputPluginWin() {}
-//: JsonPlugin(kChannelName, false), active_model_(nullptr) {}
+TextInputPluginWin::TextInputPluginWin() : JsonPluginWin(kChannelName, false), active_model_(nullptr) {}
 
 TextInputPluginWin::~TextInputPluginWin() {}
-//
-//void TextInputPlugin::HandleJsonMethodCall(
-//    const JsonMethodCallWin &method_call,
-//    std::unique_ptr<MethodResult> result) {
-//  const std::string &method = method_call.method_name();
-//
-//  // if (method.compare(kShowMethod) == 0 || method.compare(kHideMethod) == 0) {
-//  //  // These methods are no-ops.
-//  //} else if (method.compare(kClearClientMethod) == 0) {
-//  //  active_model_ = nullptr;
-//  //} else {
-//  //  // Every following method requires args.
-//  //  const Json::Value &args = method_call.GetArgumentsAsJson();
-//  //  if (args.isNull()) {
-//  //    result->Error(kBadArgumentError, "Method invoked without args");
-//  //    return;
-//  //  }
-//
-//  //  if (method.compare(kSetClientMethod) == 0) {
-//  //    // TODO(awdavies): There's quite a wealth of arguments supplied with
-//  //    this
-//  //    // method, and they should be inspected/used.
-//  //    Json::Value client_id_json = args[0];
-//  //    if (client_id_json.isNull()) {
-//  //      result->Error(kBadArgumentError, "Could not set client, ID is null.");
-//  //      return;
-//  //    }
-//  //    int client_id = client_id_json.asInt();
-//  //    if (input_models_.find(client_id) == input_models_.end()) {
-//  //      // Skips out on adding a new input model once over the limit.
-//  //      if (input_models_.size() > kInputModelLimit) {
-//  //        result->Error(
-//  //            kInternalConsistencyError,
-//  //            "Input models over limit. Aborting creation of new text
-//  //            model.");
-//  //        return;
-//  //      }
-//  //      input_models_.insert(std::make_pair(
-//  //          client_id, std::make_unique<TextInputModel>(client_id)));
-//  //    }
-//  //    active_model_ = input_models_[client_id].get();
-//  //  } else if (method.compare(kSetEditingStateMethod) == 0) {
-//  //    if (active_model_ == nullptr) {
-//  //      result->Error(
-//  //          kInternalConsistencyError,
-//  //          "Set editing state has been invoked, but no client is set.");
-//  //      return;
-//  //    }
-//  //    Json::Value text = args[kTextKey];
-//  //    if (text.isNull()) {
-//  //      result->Error(kBadArgumentError,
-//  //                    "Set editing state has been invoked, but without
-//  //                    text.");
-//  //      return;
-//  //    }
-//  //    Json::Value selection_base = args[kSelectionBaseKey];
-//  //    Json::Value selection_extent = args[kSelectionExtentKey];
-//  //    if (selection_base.isNull() || selection_extent.isNull()) {
-//  //      result->Error(kInternalConsistencyError,
-//  //                    "Selection base/extent values invalid.");
-//  //      return;
-//  //    }
-//  //    active_model_->SetEditingState(selection_base.asInt(),
-//  //                                   selection_extent.asInt(),
-//  //                                   text.asString());
-//  //  } else {
-//  //    // Unhandled method.
-//  //    result->NotImplemented();
-//  //    return;
-//  //  }
-//  // }
-//  // All error conditions return early, so if nothing has gone wrong indicate
-//  // success.
-//  result->Success();
-//}
-//
+
+void TextInputPluginWin::HandleJsonMethodCall(
+    const JsonMethodCallWin &method_call,
+    std::unique_ptr<MethodResult> result) {
+  const std::string &method = method_call.method_name();
+
+   if (method.compare(kShowMethod) == 0 || method.compare(kHideMethod) == 0) {
+    // These methods are no-ops.
+  } else if (method.compare(kClearClientMethod) == 0) {
+    active_model_ = nullptr;
+  } else {
+    // Every following method requires args.
+    const JsonObject &args = method_call.GetArgumentsAsJson();
+    if (args == nullptr) {
+      result->Error(kBadArgumentError, "Method invoked without args");
+      return;
+    }
+
+    if (method.compare(kSetClientMethod) == 0) {
+      // TODO(awdavies): There's quite a wealth of arguments supplied with
+      // this
+      // method, and they should be inspected/used.
+      auto client_id_json = args.GetNamedValue(to_hstring(kClientId));
+      if (client_id_json == nullptr) {
+        result->Error(kBadArgumentError, "Could not set client, ID is null.");
+        return;
+      }
+      int client_id = client_id_json.GetNumber();
+      if (input_models_.find(client_id) == input_models_.end()) {
+        // Skips out on adding a new input model once over the limit.
+        if (input_models_.size() > kInputModelLimit) {
+          result->Error(
+              kInternalConsistencyError,
+              "Input models over limit. Aborting creation of new text model.");
+          return;
+        }
+        input_models_.insert(std::make_pair(
+            client_id, std::make_unique<TextInputModelWin>(client_id)));
+      }
+      active_model_ = input_models_[client_id].get();
+    } else if (method.compare(kSetEditingStateMethod) == 0) {
+      if (active_model_ == nullptr) {
+        result->Error(
+            kInternalConsistencyError,
+            "Set editing state has been invoked, but no client is set.");
+        return;
+      }
+      JsonObject text = args.GetNamedObject(to_hstring(kTextKey));
+      if (text == nullptr) {
+        result->Error(kBadArgumentError,
+                      "Set editing state has been invoked, but without text.");
+        return;
+      }
+      JsonObject selection_base = args.GetNamedObject(to_hstring(kSelectionBaseKey));
+      JsonObject selection_extent = args.GetNamedObject(to_hstring(kSelectionExtentKey));
+      if (selection_base == nullptr || selection_extent == nullptr) {
+        result->Error(kInternalConsistencyError,
+                      "Selection base/extent values invalid.");
+        return;
+      }
+
+	  const std::wstring_view thing = (std::wstring_view)text.GetString();
+
+      active_model_->SetEditingState(selection_base.GetNumber(),
+                                     selection_extent.GetNumber(),
+                                     thing);
+    } else {
+      // Unhandled method.
+      result->NotImplemented();
+      return;
+    }
+   }
+  // All error conditions return early, so if nothing has gone wrong indicate
+  // success.
+  result->Success();
+}
+
 void TextInputPluginWin::SendStateUpdate(const TextInputModelWin &model) {
-  //InvokeMethod(kUpdateEditingStateMethod, model.GetState());
+  InvokeMethod(kUpdateEditingStateMethod, model.GetState());
 }
 
 }  // namespace flutter_desktop_embedding

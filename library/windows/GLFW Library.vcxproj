@@ -111,7 +111,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>flutter_engine.dll.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>windowsapp.lib;flutter_engine.dll.lib;glfw3.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <Link>
       <ModuleDefinitionFile>exports.def</ModuleDefinitionFile>
@@ -268,6 +268,8 @@
     <ClCompile Include="..\linux\src\plugin.cc" />
     <ClCompile Include="embedder.cpp" />
     <ClCompile Include="json_method_call_win.cpp" />
+    <ClCompile Include="json_method_codec_win.cpp" />
+    <ClCompile Include="json_plugin_win.cpp" />
     <ClCompile Include="text_input_model_win.cpp" />
     <ClCompile Include="text_input_plugin_win.cpp" />
   </ItemGroup>
@@ -278,6 +280,7 @@
     <ClInclude Include="..\linux\include\flutter_desktop_embedding\plugin.h" />
     <ClInclude Include="embedder.h" />
     <ClInclude Include="json_method_call_win.h" />
+    <ClInclude Include="json_method_codec_win.h" />
     <ClInclude Include="json_plugin_win.h" />
     <ClInclude Include="text_input_model_win.h" />
     <ClInclude Include="text_input_plugin_win.h" />

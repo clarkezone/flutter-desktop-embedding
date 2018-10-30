@@ -34,7 +34,7 @@ namespace flutter_desktop_embedding {
 		// Returns false if the state is not valid (base or extent are out of
 		// bounds, or base is less than extent).
 		bool SetEditingState(size_t selection_base, size_t selection_extent,
-			const std::string &text);
+			const std::wstring_view &text);
 
 		// Adds a character.
 		//
@@ -82,17 +82,17 @@ namespace flutter_desktop_embedding {
 		void MoveCursorToEnd();
 
 		// Returns the state in the form of a platform message.
-		JsonValue GetState() const;
+		JsonObject GetState() const;
 
 		int client_id() const { return client_id_; }
 
 	private:
 		void DeleteSelected();
 
-		std::string text_;
+		std::wstring text_;
 		int client_id_;
-		std::string::iterator selection_base_;
-		std::string::iterator selection_extent_;
+		std::wstring::iterator selection_base_;
+		std::wstring::iterator selection_extent_;
 	};
 
 }  // namespace flutter_desktop_embedding

@@ -16,14 +16,14 @@
 namespace flutter_desktop_embedding {
 
 JsonMethodCallWin::JsonMethodCallWin(const std::string &method_name,
-    const Windows::Data::Json::JsonValue &arguments)
+    const Windows::Data::Json::JsonObject &arguments)
     : MethodCall(method_name), arguments_(arguments) {}
 
 JsonMethodCallWin::~JsonMethodCallWin() {}
 
 const void *JsonMethodCallWin::arguments() const { return &arguments_; }
 
-const Windows::Data::Json::JsonValue &JsonMethodCallWin::GetArgumentsAsJson()
+const Windows::Data::Json::JsonObject &JsonMethodCallWin::GetArgumentsAsJson()
     const {
   return arguments_;
 }

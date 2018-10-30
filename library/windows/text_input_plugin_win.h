@@ -26,14 +26,14 @@ namespace flutter_desktop_embedding {
 // Implements a text input plugin.
 //
 // Specifically handles window events within GLFW.
-class TextInputPluginWin : public KeyboardHookHandler { //, public JsonPluginWin {
+class TextInputPluginWin : public KeyboardHookHandler, public JsonPluginWin {
  public:
   TextInputPluginWin();
   virtual ~TextInputPluginWin();
 
   // Plugin.
-  /*void HandleJsonMethodCall(const JsonMethodCallWin &method_call,
-                            std::unique_ptr<MethodResult> result) override;*/
+  void HandleJsonMethodCall(const JsonMethodCallWin &method_call,
+                            std::unique_ptr<MethodResult> result) override;
 
   // KeyboardHookHandler.
   void KeyboardHook(GLFWwindow *window, int key, int scancode, int action,

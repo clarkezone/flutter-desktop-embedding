@@ -18,7 +18,8 @@
 #include <memory>
 #include <string>
 
-#include <flutter_embedder.h>
+// TODO: need to fix this
+#include "../../../windows/dependencies/engine/flutter_embedder.h"
 
 #include "method_call.h"
 #include "method_codec.h"

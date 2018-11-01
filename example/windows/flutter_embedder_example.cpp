@@ -17,6 +17,8 @@
 
 #include <embedder.h>
 
+using namespace flutter_desktop_embedding;
+
 int main(int argc, char **argv) {
   if (!FlutterInit()) {
     std::cout << "Couldn't init GLFW" << std::endl;

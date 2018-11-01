@@ -40,9 +40,6 @@ struct FlutterEmbedderState {
 
 static constexpr char kDefaultWindowTitle[] = "Flutter";
 
-bool FlutterInit() { return glfwInit(); }
-
-void FlutterTerminate() { glfwTerminate(); }
 
 static FlutterEmbedderState *GetSavedEmbedderState(GLFWwindow *window) {
   return reinterpret_cast<FlutterEmbedderState *>(
@@ -87,7 +84,11 @@ static void GLFWmouseButtonCallback(GLFWwindow *window, int key, int action,
 
 static void GLFWKeyCallback(GLFWwindow *window, int key, int scancode,
                             int action, int mods) {
-  if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
+  for (flutter_desktop_embedding::KeyboardHookHandler *handler :
+       GetSavedEmbedderState(window)->keyboard_hook_handlers) {
+    handler->KeyboardHook(window, key, scancode, action, mods);
+  }
+	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS) {
     glfwSetWindowShouldClose(window, GLFW_TRUE);
   }
 }
@@ -99,8 +100,7 @@ static void GLFWwindowSizeCallback(GLFWwindow *window, int width, int height) {
   event.height = height;
   // TODO: Handle pixel ratio for different DPI monitors.
   event.pixel_ratio = 1.0;
-  FlutterEngineSendWindowMetricsEvent(
-      reinterpret_cast<FlutterEngine>(glfwGetWindowUserPointer(window)),
+	FlutterEngineSendWindowMetricsEvent(GetSavedEmbedderState(window)->engine,
       &event);
 }
 
@@ -181,6 +181,27 @@ static FlutterEngine RunFlutterEngine(
   return engine;
 }
 
+namespace flutter_desktop_embedding {
+	
+bool FlutterInit() { return glfwInit(); }
+
+void FlutterTerminate() { glfwTerminate(); }
+
+bool AddPlugin(GLFWwindow *flutter_window,
+               std::unique_ptr<Plugin> plugin) {
+  auto state = GetSavedEmbedderState(flutter_window);
+  plugin->set_flutter_engine(state->engine);
+  return state->plugin_handler->AddPlugin(std::move(plugin));
+}
+
+GLFWwindow *CreateFlutterWindowInSnapshotMode(
+    size_t initial_width, size_t initial_height, const std::string &assets_path,
+    const std::string &icu_data_path,
+    const std::vector<std::string> &arguments) {
+  return CreateFlutterWindow(initial_width, initial_height, "", assets_path, "",
+                             icu_data_path, arguments);
+}
+
 GLFWwindow *CreateFlutterWindow(size_t initial_width, size_t initial_height,
                                 const std::string &main_path,
                                 const std::string &assets_path,
@@ -201,13 +222,16 @@ GLFWwindow *CreateFlutterWindow(size_t initial_width, size_t initial_height,
   }
 
   FlutterEmbedderState *state = new FlutterEmbedderState();
-  //state->plugin_handler = std::make_unique<flutter_desktop_embedding::PluginHandler>(engine);
+  state->plugin_handler = std::make_unique<PluginHandler>(engine);
   state->engine = engine;
-  /*auto input_plugin =
-      std::make_unique<flutter_desktop_embedding::TextInputPluginWin>();
-  state->keyboard_hook_handlers.push_back(input_plugin.get());*/
+  auto input_plugin =
+      std::make_unique<TextInputPluginWin>();
+  state->keyboard_hook_handlers.push_back(input_plugin.get());
 
   glfwSetWindowUserPointer(window, state);
+
+  AddPlugin(window, std::move(input_plugin));
+
   int width, height;
   glfwGetWindowSize(window, &width, &height);
   GLFWwindowSizeCallback(window, width, height);
@@ -215,20 +239,6 @@ GLFWwindow *CreateFlutterWindow(size_t initial_width, size_t initial_height,
   glfwSetWindowSizeCallback(window, GLFWwindowSizeCallback);
   glfwSetMouseButtonCallback(window, GLFWmouseButtonCallback);
   return window;
-}
-
-bool AddPlugin(GLFWwindow *flutter_window, std::unique_ptr<flutter_desktop_embedding::Plugin> plugin) {
-  auto state = GetSavedEmbedderState(flutter_window);
-  plugin->set_flutter_engine(state->engine);
-  return state->plugin_handler->AddPlugin(std::move(plugin));
-}
-
-GLFWwindow *CreateFlutterWindowInSnapshotMode(
-    size_t initial_width, size_t initial_height, const std::string &assets_path,
-    const std::string &icu_data_path,
-    const std::vector<std::string> &arguments) {
-  return CreateFlutterWindow(initial_width, initial_height, "", assets_path, "",
-                             icu_data_path, arguments);
 }
 
 void FlutterWindowLoop(GLFWwindow *flutter_window) {
@@ -240,3 +250,5 @@ void FlutterWindowLoop(GLFWwindow *flutter_window) {
   delete state;
   glfwDestroyWindow(flutter_window);
 }
+
+}  // namespace flutter_desktop_embedding

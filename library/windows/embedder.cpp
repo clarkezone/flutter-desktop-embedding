@@ -58,8 +58,7 @@ static void GLFWcursorPositionCallbackAtPhase(GLFWwindow *window,
       std::chrono::duration_cast<std::chrono::microseconds>(
           std::chrono::high_resolution_clock::now().time_since_epoch())
           .count();
-  FlutterEngineSendPointerEvent(
-      reinterpret_cast<FlutterEngine>(glfwGetWindowUserPointer(window)), &event,
+  FlutterEngineSendPointerEvent(GetSavedEmbedderState(window)->engine, &event,
       1);
 }
 

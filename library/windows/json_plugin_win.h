@@ -53,7 +53,7 @@ class JsonPluginWin : public Plugin {
   // Calls InvokeMethodCall with a JsonMethodCall constructed from the given
   // values.
   void InvokeMethod(const std::string &method,
-                    const JsonObject &arguments); // const JsonValue &arguments = Json::Value());
+                    const IJsonValue &arguments); // const JsonValue &arguments = Json::Value());
 };
 
 }  // namespace flutter_desktop_embedding

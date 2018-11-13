@@ -286,6 +286,7 @@ GLFWwindow *CreateFlutterWindow(size_t initial_width, size_t initial_height,
   int width, height;
   glfwGetWindowSize(window, &width, &height);
   GLFWwindowSizeCallback(window, width, height);
+  glfwSetKeyCallback(window, GLFWKeyCallback);
   glfwSetWindowSizeCallback(window, GLFWwindowSizeCallback);
   GLFWAssignEventCallbacks(window);
   return window;

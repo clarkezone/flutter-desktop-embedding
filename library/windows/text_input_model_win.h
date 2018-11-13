@@ -82,7 +82,7 @@ namespace flutter_desktop_embedding {
 		void MoveCursorToEnd();
 
 		// Returns the state in the form of a platform message.
-		JsonObject GetState() const;
+		IJsonValue GetState() const;
 
 		int client_id() const { return client_id_; }
 

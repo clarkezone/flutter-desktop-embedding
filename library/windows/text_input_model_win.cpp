@@ -144,7 +144,7 @@ bool TextInputModelWin::MoveCursorBack() {
 }
 
 //TODO: can i make this an ijsonvalue?
-JsonObject TextInputModelWin::GetState() const {
+IJsonValue TextInputModelWin::GetState() const {
   // TODO(awdavies): Most of these are hard-coded for now.
   JsonObject editing_state;
   editing_state.SetNamedValue(to_hstring(kComposingBaseKey), // to_hastring required as kComposingBaseKey is 8 bit char

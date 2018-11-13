@@ -33,7 +33,7 @@ void JsonPluginWin::HandleMethodCall(const MethodCall &method_call,
 }
 
 void JsonPluginWin::InvokeMethod(const std::string &method,
-                              const JsonObject &arguments) {
+                              const IJsonValue &arguments) {
   InvokeMethodCall(JsonMethodCallWin(method, arguments));
 }
 

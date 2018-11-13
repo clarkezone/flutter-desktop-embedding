@@ -81,6 +81,13 @@ static void GLFWmouseButtonCallback(GLFWwindow *window, int key, int action,
   }
 }
 
+static void GLFWCharCallback(GLFWwindow *window, unsigned int code_point) {
+  for (flutter_desktop_embedding::KeyboardHookHandler *handler :
+       GetSavedEmbedderState(window)->keyboard_hook_handlers) {
+    handler->CharHook(window, code_point);
+  }
+}
+
 static void GLFWKeyCallback(GLFWwindow *window, int key, int scancode,
                             int action, int mods) {
   for (flutter_desktop_embedding::KeyboardHookHandler *handler :
@@ -101,6 +108,37 @@ static void GLFWwindowSizeCallback(GLFWwindow *window, int width, int height) {
   event.pixel_ratio = 1.0;
 	FlutterEngineSendWindowMetricsEvent(GetSavedEmbedderState(window)->engine,
       &event);
+}
+
+// Flushes event queue and then assigns default window callbacks.
+static void GLFWAssignEventCallbacks(GLFWwindow *window) {
+  glfwPollEvents();
+  glfwSetKeyCallback(window, GLFWKeyCallback);
+  glfwSetCharCallback(window, GLFWCharCallback);
+  glfwSetMouseButtonCallback(window, GLFWmouseButtonCallback);
+}
+
+// Clears default window events.
+static void GLFWClearEventCallbacks(GLFWwindow *window) {
+  glfwSetKeyCallback(window, nullptr);
+  glfwSetCharCallback(window, nullptr);
+  glfwSetMouseButtonCallback(window, nullptr);
+}
+
+static void GLFWOnFlutterPlatformMessage(const FlutterPlatformMessage *message,
+                                         void *user_data) {
+  if (message->struct_size != sizeof(FlutterPlatformMessage)) {
+    std::cerr << "Invalid message size received. Expected: "
+              << sizeof(FlutterPlatformMessage) << " but received "
+              << message->struct_size << std::endl;
+    return;
+  }
+
+  GLFWwindow *window = reinterpret_cast<GLFWwindow *>(user_data);
+  auto state = GetSavedEmbedderState(window);
+  state->plugin_handler->HandleMethodCallMessage(
+      message, [window] { GLFWClearEventCallbacks(window); },
+      [window] { GLFWAssignEventCallbacks(window); });
 }
 
 static bool GLFWMakeContextCurrent(void *user_data) {
@@ -171,6 +209,7 @@ static FlutterEngine RunFlutterEngine(
   args.icu_data_path = icu_data_path.c_str();
   args.command_line_argc = argv.size();
   args.command_line_argv = &argv[0];
+  args.platform_message_callback = GLFWOnFlutterPlatformMessage;
   FlutterEngine engine = nullptr;
   auto result =
       FlutterEngineRun(FLUTTER_ENGINE_VERSION, &config, &args, window, &engine);
@@ -237,12 +276,15 @@ GLFWwindow *CreateFlutterWindow(size_t initial_width, size_t initial_height,
   glfwSetKeyCallback(window, GLFWKeyCallback);
   glfwSetWindowSizeCallback(window, GLFWwindowSizeCallback);
   glfwSetMouseButtonCallback(window, GLFWmouseButtonCallback);
+  GLFWAssignEventCallbacks(window);
   return window;
 }
 
 void FlutterWindowLoop(GLFWwindow *flutter_window) {
   while (!glfwWindowShouldClose(flutter_window)) {
     glfwWaitEvents();
+    // TODO(awdavies): This will be deprecated soon.
+    __FlutterEngineFlushPendingTasksNow();
   }
   auto state = GetSavedEmbedderState(flutter_window);
   FlutterEngineShutdown(state->engine);

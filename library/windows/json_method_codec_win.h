@@ -56,7 +56,7 @@ class JsonMethodCodecWin : public MethodCodec {
  private:
   // Serializes |json| into a byte stream.
   std::unique_ptr<std::vector<uint8_t>> EncodeJsonObject(
-      const JsonObject &json) const;
+      const IJsonValue &json) const;
 };
 
 }  // namespace flutter_desktop_embedding

@@ -28,15 +28,21 @@ void Plugin::InvokeMethodCall(const MethodCall &method_call) {
   }
   std::unique_ptr<std::vector<uint8_t>> message =
       GetCodec().EncodeMethodCall(method_call);
-  FlutterPlatformMessage platform_message_response = {};
-  platform_message_response.struct_size = sizeof(FlutterPlatformMessage);
-  platform_message_response.channel = channel_.c_str();
-  platform_message_response.message = message->data();
+  FlutterPlatformMessage platform_message_response = {
+      sizeof(FlutterPlatformMessage), channel_.c_str(), message->data(),
+      message->size()
   
-  //TODO
+  };
+
+
+
+
+  //platform_message_response.struct_size = sizeof(FlutterPlatformMessage);
+  //platform_message_response.channel = channel_.c_str();
+  //platform_message_response.message = message->data();
   //platform_message_response.message_size = message->size();
-  //};
-  FlutterEngineSendPlatformMessage(engine_, &platform_message_response);
+  
+  auto result = FlutterEngineSendPlatformMessage(engine_, &platform_message_response);
 }
 
 }  // namespace flutter_desktop_embedding

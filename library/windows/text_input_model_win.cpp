@@ -146,6 +146,7 @@ bool TextInputModelWin::MoveCursorBack() {
 //TODO: can i make this an ijsonvalue?
 IJsonValue TextInputModelWin::GetState() const {
   // TODO(awdavies): Most of these are hard-coded for now.
+  JsonArray returnVal;
   JsonObject editing_state;
   editing_state.SetNamedValue(to_hstring(kComposingBaseKey), // to_hastring required as kComposingBaseKey is 8 bit char
                               JsonValue::CreateNumberValue(-1));
@@ -168,11 +169,10 @@ IJsonValue TextInputModelWin::GetState() const {
  
   // TODO(stuartmorgan): Move client_id out up to the plugin so that this
   // function just returns the editing state.
-  JsonObject args;
-  args.SetNamedValue(to_hstring(kClientId),
-                     JsonValue::CreateNumberValue(client_id_));
-  args.SetNamedValue(to_hstring(kEditingState), editing_state);
-  return args;
+
+  returnVal.Append(JsonValue::CreateNumberValue(client_id_));
+  returnVal.Append(editing_state);
+  return returnVal;
 }
 
 }  // namespace flutter_desktop_embedding

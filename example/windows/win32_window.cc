@@ -94,10 +94,14 @@ Win32Window::MessageHandler(HWND hwnd, UINT const message, WPARAM const wparam,
     return 0;
   }
 
+  HWND result = NULL;
   switch (message) {
     case WM_DESTROY:
-      window_handle_ = nullptr;
-      Destroy();
+      result = GetTopWindow(window_handle_);
+      if (result != NULL) {
+        PostMessage(result, WM_QUIT, 0, 0);
+	  }
+      PostQuitMessage(0); 
       return 0;
 
     case WM_SIZE:

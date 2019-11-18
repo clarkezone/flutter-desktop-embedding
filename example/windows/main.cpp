@@ -48,66 +48,124 @@ std::string GetExecutableDirectory() {
 
 }  // namespace
 
+ULONG_PTR GetParentProcessId(HANDLE h)  // By Napalm @ NetCore2K
+{
+  if (h == 0) {
+    h = GetCurrentProcess();
+  }
+
+  ULONG_PTR pbi[6];
+  ULONG ulSize = 0;
+  LONG(WINAPI * NtQueryInformationProcess)
+  (HANDLE ProcessHandle, ULONG ProcessInformationClass,
+   PVOID ProcessInformation, ULONG ProcessInformationLength,
+   PULONG ReturnLength);
+  *(FARPROC *)&NtQueryInformationProcess =
+      GetProcAddress(LoadLibraryA("NTDLL.DLL"), "NtQueryInformationProcess");
+  if (NtQueryInformationProcess) {
+    if (NtQueryInformationProcess(h, 0, &pbi, sizeof(pbi), &ulSize) >= 0 &&
+        ulSize == sizeof(pbi))
+      return pbi[5];
+  }
+  return (ULONG_PTR)-1;
+}
+
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
                       int show_command) {
-  // Attach to console when present (e.g., 'flutter run') or create a
-  // new console when running with a debugger.
-  if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
-    ::AllocConsole();
-  }
+  // int nArgs;
+  // auto szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
+  // LocalFree(szArglist);
 
-  // Resources are located relative to the executable.
-  std::string base_directory = GetExecutableDirectory();
-  if (base_directory.empty()) {
-    base_directory = ".";
-  }
-  std::string data_directory = base_directory + "\\data";
-  std::string assets_path = data_directory + "\\flutter_assets";
-  std::string icu_data_path = data_directory + "\\icudtl.dat";
+  auto args = std::string(GetCommandLineA());
+  auto rest = args.find("Flutter");
 
-  // Arguments for the Flutter Engine.
-  std::vector<std::string> arguments;
+  int receivedHwnd = -1;
 
   // Top-level window frame.
   Win32Window::Point origin(kFlutterWindowOriginX, kFlutterWindowOriginY);
   Win32Window::Size size(kFlutterWindowWidth, kFlutterWindowHeight);
 
-  flutter::FlutterViewController flutter_controller(
-      icu_data_path, size.width, size.height, assets_path, arguments);
-  RegisterPlugins(&flutter_controller);
+  STARTUPINFO si{};
+  PROCESS_INFORMATION pi{};
+  ZeroMemory(&si, sizeof(si));
+  si.cb = sizeof(si);
+  ZeroMemory(&pi, sizeof(pi));
 
-  // Create a top-level win32 window to host the Flutter view.
   Win32Window window;
-  if (!window.CreateAndShow(kFlutterWindowTitle, origin, size)) {
-    return EXIT_FAILURE;
-  }
+  std::unique_ptr<flutter::FlutterViewController> flutter_controller = {};
+  if (rest == std::string::npos && !args.empty()) {
+    //__debugbreak();
+    receivedHwnd = atoi(args.c_str());
 
-  // Parent and resize Flutter view into top-level window.
-  window.SetChildContent(flutter_controller.GetNativeWindow());
+    auto result = ::AllocConsole();
 
-  // Run messageloop with a hook for flutter_controller to do work until
-  // the window is closed.
-  std::chrono::nanoseconds wait_duration(0);
-  // Run until the window is closed.
-  while (window.GetHandle() != nullptr) {
-    MsgWaitForMultipleObjects(0, NULL, FALSE,
-                              static_cast<DWORD>(wait_duration.count() / 1000),
-                              QS_ALLINPUT);
+    // Resources are located relative to the executable.
+    std::string base_directory = GetExecutableDirectory();
+    if (base_directory.empty()) {
+      base_directory = ".";
+    }
+    std::string data_directory = base_directory + "\\data";
+    std::string assets_path = data_directory + "\\flutter_assets";
+    std::string icu_data_path = data_directory + "\\icudtl.dat";
+
+    // Arguments for the Flutter Engine.
+    std::vector<std::string> arguments;
+
+    flutter_controller = std::make_unique<flutter::FlutterViewController>(
+        icu_data_path, size.width, size.height, assets_path, arguments);
+    RegisterPlugins(flutter_controller.get());
+
+    // Set parent
+    auto res =
+        SetParent(flutter_controller->GetNativeWindow(), (HWND)receivedHwnd);
+    if (res == nullptr) {
+      auto error = GetLastError();
+      OutputDebugString(L"Failed to set parent");
+    }
+
+    RECT frame;
+    GetClientRect((HWND)receivedHwnd, &frame);
+
+    MoveWindow(flutter_controller->GetNativeWindow(), frame.left, frame.top,
+               frame.right - frame.left, frame.bottom - frame.top, true);
+
+    SetFocus(flutter_controller->GetNativeWindow());
     MSG message;
-    // All pending Windows messages must be processed; MsgWaitForMultipleObjects
-    // won't return again for items left in the queue after PeekMessage.
-    while (PeekMessage(&message, nullptr, 0, 0, PM_REMOVE)) {
-      if (message.message == WM_QUIT) {
-        window.Destroy();
-        break;
-      }
+    while (GetMessage(&message, NULL, 0, 0) != 0) {
       TranslateMessage(&message);
       DispatchMessage(&message);
     }
-    // Allow Flutter to process its messages.
-    // TODO: Consider interleaving processing on a per-message basis to avoid
-    // the possibility of one queue starving the other.
-    wait_duration = flutter_controller.ProcessMessages();
+
+  } else {
+    if (prev != nullptr) {
+      return EXIT_FAILURE;
+    }
+    // Create a top-level win32 window to host the Flutter view.
+
+    if (!window.CreateAndShow(kFlutterWindowTitle, origin, size)) {
+      return EXIT_FAILURE;
+    }
+
+    auto wnd = window.GetHandle();
+    wchar_t buffer[_MAX_U64TOSTR_BASE2_COUNT];
+    auto handleAsString = _itow_s((long)wnd, buffer, _countof(buffer), 10);
+
+    std::string base_directory = GetExecutableDirectory();
+    std::wstring foo(base_directory.begin(), base_directory.end());
+    auto result = CreateProcessW(
+        foo.append(L"\\Flutter Desktop Example.exe").c_str(), buffer, nullptr,
+        nullptr, false, 0, nullptr, nullptr, &si, &pi);
+
+    if (result == 0) {
+      auto error = GetLastError();
+      OutputDebugString(L"s");
+    }
+
+    MSG message;
+    while (GetMessage(&message, NULL, 0, 0) != 0) {
+      TranslateMessage(&message);
+      DispatchMessage(&message);
+    }
   }
 
   return EXIT_SUCCESS;

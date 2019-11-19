@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         // See https://github.com/flutter/flutter/wiki/Desktop-shells#fonts
         fontFamily: 'Roboto',
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Flutter'),
     );
   }
 }
@@ -68,11 +68,14 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Text(
-              'You have pushed the button this many times:',
+              'You have pushed the button:',
             ),
             Text(
               '$_counter',
               style: Theme.of(context).textTheme.display1,
+            ),
+            Text(
+              'times.',
             ),
           ],
         ),

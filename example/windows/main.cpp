@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+﻿// Copyright 2018 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,10 +72,12 @@ ULONG_PTR GetParentProcessId(HANDLE h)  // By Napalm @ NetCore2K
 
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
                       int show_command) {
-  // int nArgs;
+  
+	//Sleep(1000);
+	// int nArgs;
   // auto szArglist = CommandLineToArgvW(GetCommandLineW(), &nArgs);
   // LocalFree(szArglist);
-
+  //__debugbreak();
   auto args = std::string(GetCommandLineA());
   auto rest = args.find("Flutter");
 
@@ -97,7 +99,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
     //__debugbreak();
     receivedHwnd = atoi(args.c_str());
 
-    auto result = ::AllocConsole();
+    //auto result = ::AllocConsole();
 
     // Resources are located relative to the executable.
     std::string base_directory = GetExecutableDirectory();
@@ -127,7 +129,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
     GetClientRect((HWND)receivedHwnd, &frame);
 
     MoveWindow(flutter_controller->GetNativeWindow(), frame.left, frame.top,
-               frame.right - frame.left, frame.bottom - frame.top, true);
+               frame.right - frame.left-970, frame.bottom - frame.top, true);
 
     SetFocus(flutter_controller->GetNativeWindow());
     MSG message;
@@ -146,7 +148,8 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
       return EXIT_FAILURE;
     }
 
-    auto wnd = window.GetHandle();
+    //auto wnd = window.GetHandle();
+    auto wnd = 331716;
     wchar_t buffer[_MAX_U64TOSTR_BASE2_COUNT];
     auto handleAsString = _itow_s((long)wnd, buffer, _countof(buffer), 10);
 
@@ -155,6 +158,10 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
     auto result = CreateProcessW(
         foo.append(L"\\Flutter Desktop Example.exe").c_str(), buffer, nullptr,
         nullptr, false, 0, nullptr, nullptr, &si, &pi);
+
+	/*auto result = CreateProcessW(
+        foo.append(L"\\Flutter Desktop Example.exe").c_str(), buffer, nullptr,
+        nullptr, false, 0, nullptr, nullptr, &si, &pi);*/
 
     if (result == 0) {
       auto error = GetLastError();

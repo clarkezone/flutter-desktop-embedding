@@ -97,6 +97,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
   std::unique_ptr<flutter::FlutterViewController> flutter_controller = {};
   if (rest == std::string::npos && !args.empty()) {
     //__debugbreak();
+    //__debugbreak();
     receivedHwnd = atoi(args.c_str());
 
     //auto result = ::AllocConsole();
@@ -112,6 +113,9 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
 
     // Arguments for the Flutter Engine.
     std::vector<std::string> arguments;
+    arguments.insert(arguments.end(), "observatory-port");
+    arguments.insert(arguments.end(), "8080");
+    arguments.insert(arguments.end(), "disable-service-auth-codes");
 
     flutter_controller = std::make_unique<flutter::FlutterViewController>(
         icu_data_path, size.width, size.height, assets_path, arguments);

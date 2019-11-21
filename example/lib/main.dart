@@ -16,6 +16,7 @@ import 'package:flutter/foundation.dart'
     show debugDefaultTargetPlatformOverride;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'kernel32.dart';
 
 void main() {
   // See https://github.com/flutter/flutter/wiki/Desktop-shells#target-platform-override
@@ -57,6 +58,15 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _callRpc() {
+     KernelLib foo = new KernelLib();
+
+    var hPipe = foo.createFile("\\\\.\\pipe\\Pipe");
+    if (hPipe != -1) {
+      foo.writeFile(hPipe, "Hello Pipe\n");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +87,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               'times.',
             ),
+            FlatButton(child: Text('RPC'), onPressed: _callRpc,)
           ],
         ),
       ),

@@ -31,7 +31,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     dispatcher.ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
   }
 
-  void SetWindow(CoreWindow const &window) {
+  Windows::Foundation::IAsyncAction SetWindow(CoreWindow const &window) {
     Compositor compositor;
     ContainerVisual root = compositor.CreateContainerVisual();
     m_target = compositor.CreateTargetForCurrentView();
@@ -43,14 +43,28 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     window.PointerReleased([&](auto &&...) { m_selected = nullptr; });
 
-    std::string data_directory = "\\data";
-    std::string assets_path = data_directory + "\\flutter_assets";
-    std::string icu_data_path = data_directory + "\\icudtl.dat";
+    Windows::Storage::StorageFolder folder =
+        Windows::ApplicationModel::Package::Current().InstalledLocation();
+
+    Windows::Storage::StorageFolder assets = co_await folder.GetFolderAsync(L"Assets"); //TODO: handle error
+    Windows::Storage::StorageFolder data =
+        co_await assets.GetFolderAsync(L"data");  // TODO: handle error
+    Windows::Storage::StorageFolder flutter_assets =
+        co_await data.GetFolderAsync(L"flutter_assets");  // TODO: handle error
+    Windows::Storage::StorageFile icu_data =
+        co_await data.GetFileAsync(L"icudtl.dat");  // TODO: handle error
+
+
+    std::string flutter_assets_path(to_string(flutter_assets.Path()));
+    std::string icu_data_path(to_string(flutter_assets.Path()));
+
+    //std::string data_directory = "\\data";
+    //std::string assets_path = data_directory + "\\flutter_assets";
+    //std::string icu_data_path = data_directory + "\\icudtl.dat";
 
     std::vector<std::string> arguments;
 
-    flutter::FlutterViewController flutter_controller(icu_data_path, 10, 10,
-                                                      assets_path, arguments);
+    flutter::FlutterViewController flutter_controller(icu_data_path, 10, 10, flutter_assets_path, arguments);
   }
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {

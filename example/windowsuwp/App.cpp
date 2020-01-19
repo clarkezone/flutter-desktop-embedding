@@ -58,13 +58,13 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     std::string flutter_assets_path(to_string(flutter_assets.Path()));
     std::string icu_data_path(to_string(flutter_assets.Path()));
 
-    //std::string data_directory = "\\data";
-    //std::string assets_path = data_directory + "\\flutter_assets";
-    //std::string icu_data_path = data_directory + "\\icudtl.dat";
-
     std::vector<std::string> arguments;
 
     flutter::FlutterViewController flutter_controller(icu_data_path, 10, 10, flutter_assets_path, arguments);
+    auto abi_visual_ = flutter_controller.GetNativeWindow();
+    //TODO: update GetNativeWindow wrapper in engine to return abiptr to spritevisual
+    //TODO: cppwinrt wrapper from abiptr
+    //TODO: parent visual into tree
   }
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {

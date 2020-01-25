@@ -1,7 +1,6 @@
 #include "pch.h"
-
+#include <windows.ui.composition.h>
 using namespace winrt;
-
 using namespace Windows;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::Foundation::Numerics;
@@ -14,6 +13,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   VisualCollection m_visuals{nullptr};
   Visual m_selected{nullptr};
   float2 m_offset{};
+  std::unique_ptr<flutter::FlutterViewController> m_flutterController{nullptr};
 
   IFrameworkView CreateView() { return *this; }
 
@@ -60,12 +60,22 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     std::vector<std::string> arguments;
 
-    flutter::FlutterViewController flutter_controller(icu_data_path, 320, 240, flutter_assets_path, arguments);
-    void* pointer = flutter_controller.view()->GetVisual();
-    //auto abi_visual_ = flutter_controller.GetNativeWindow();
-    //TODO: update GetNativeWindow wrapper in engine to return abiptr to spritevisual
-    //TODO: cppwinrt wrapper from abiptr
-    //TODO: parent visual into tree
+    m_flutterController = std::make_unique<flutter::FlutterViewController>(icu_data_path, 320, 240, flutter_assets_path, arguments);
+    void *pointer = m_flutterController->view()->GetVisual();
+
+    winrt::com_ptr<ABI::Windows::UI::Composition::ISpriteVisual> rawAbi =
+        nullptr;
+
+    Windows::UI::Composition::ISpriteVisual abiFlutterVisual = nullptr;
+
+    winrt::copy_from_abi(abiFlutterVisual, pointer);
+    //TODO ensure refcounting is correct, release abiPtr
+
+    Windows::UI::Composition::Visual flutterVisual = nullptr;
+    abiFlutterVisual.as(flutterVisual);
+    if (flutterVisual != nullptr) {
+       m_visuals.InsertAtTop(flutterVisual);
+    }
   }
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {

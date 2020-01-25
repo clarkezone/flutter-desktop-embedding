@@ -9,3 +9,4 @@
 #include <winrt/Windows.UI.Input.h>
 #include <flutter_windows.h>
 #include <cpp_client_wrapper/include/flutter/flutter_view_controller.h>
+#include <memory>

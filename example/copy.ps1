@@ -16,3 +16,6 @@ copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll.lib .\window
 copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll .\windowsuwp\flutter\ephemeral\.
 copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll.pdb .\windowsuwp\flutter\ephemeral\.
 copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll.exp .\windowsuwp\flutter\ephemeral\.
+
+Copy-Item -Recurse -Force ..\..\engine\src\out\host_debug_unopt\cpp_client_wrapper .\windowsuwp\flutter\ephemeral\.
+copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.h .\windowsuwp\flutter\ephemeral\.

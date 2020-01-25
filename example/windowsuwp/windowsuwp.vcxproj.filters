@@ -42,7 +42,6 @@
   <ItemGroup>
     <None Include="PropertySheet.props" />
     <None Include="packages.config" />
-    <None Include="flutter\ephemeral\flutter_windows.dll" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />

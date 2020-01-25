@@ -61,7 +61,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     std::vector<std::string> arguments;
 
     flutter::FlutterViewController flutter_controller(icu_data_path, 320, 240, flutter_assets_path, arguments);
-    auto abi_visual_ = flutter_controller.GetNativeWindow();
+    //auto abi_visual_ = flutter_controller.GetNativeWindow();
     //TODO: update GetNativeWindow wrapper in engine to return abiptr to spritevisual
     //TODO: cppwinrt wrapper from abiptr
     //TODO: parent visual into tree

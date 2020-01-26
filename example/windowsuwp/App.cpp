@@ -1,5 +1,6 @@
-#include "pch.h"
 #include <windows.ui.composition.h>
+
+#include "pch.h"
 using namespace winrt;
 using namespace Windows;
 using namespace Windows::ApplicationModel::Core;
@@ -13,6 +14,8 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   VisualCollection m_visuals{nullptr};
   Visual m_selected{nullptr};
   float2 m_offset{};
+  Compositor m_compositor{nullptr};
+
   std::unique_ptr<flutter::FlutterViewController> m_flutterController{nullptr};
 
   IFrameworkView CreateView() { return *this; }
@@ -33,8 +36,9 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
   Windows::Foundation::IAsyncAction SetWindow(CoreWindow const &window) {
     Compositor compositor;
-    ContainerVisual root = compositor.CreateContainerVisual();
-    m_target = compositor.CreateTargetForCurrentView();
+    m_compositor = compositor;
+    ContainerVisual root = m_compositor.CreateContainerVisual();
+    m_target = m_compositor.CreateTargetForCurrentView();
     m_target.Root(root);
     m_visuals = root.Children();
 
@@ -46,7 +50,8 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     Windows::Storage::StorageFolder folder =
         Windows::ApplicationModel::Package::Current().InstalledLocation();
 
-    Windows::Storage::StorageFolder assets = co_await folder.GetFolderAsync(L"Assets"); //TODO: handle error
+    Windows::Storage::StorageFolder assets =
+        co_await folder.GetFolderAsync(L"Assets");  // TODO: handle error
     Windows::Storage::StorageFolder data =
         co_await assets.GetFolderAsync(L"data");  // TODO: handle error
     Windows::Storage::StorageFolder flutter_assets =
@@ -54,28 +59,32 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     Windows::Storage::StorageFile icu_data =
         co_await data.GetFileAsync(L"icudtl.dat");  // TODO: handle error
 
-
     std::string flutter_assets_path(to_string(flutter_assets.Path()));
     std::string icu_data_path(to_string(icu_data.Path()));
 
     std::vector<std::string> arguments;
 
-    m_flutterController = std::make_unique<flutter::FlutterViewController>(icu_data_path, 320, 240, flutter_assets_path, arguments);
+    m_flutterController = std::make_unique<flutter::FlutterViewController>(
+        icu_data_path, 320, 240, flutter_assets_path, arguments,
+        winrt::get_abi(m_compositor));
     void *pointer = m_flutterController->view()->GetVisual();
 
-    winrt::com_ptr<ABI::Windows::UI::Composition::ISpriteVisual> rawAbi =
+    winrt::com_ptr<Windows::UI::Composition::ISpriteVisual> rawAbi =
         nullptr;
 
     Windows::UI::Composition::ISpriteVisual abiFlutterVisual = nullptr;
 
     winrt::copy_from_abi(abiFlutterVisual, pointer);
-    //TODO ensure refcounting is correct, release abiPtr
+    // TODO ensure refcounting is correct, release abiPtr
 
     Windows::UI::Composition::Visual flutterVisual = nullptr;
     abiFlutterVisual.as(flutterVisual);
     if (flutterVisual != nullptr) {
-       m_visuals.InsertAtTop(flutterVisual);
+      m_visuals.InsertAtTop(flutterVisual);
     }
+
+
+                           m_flutterController->ProcessMessages();
   }
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {

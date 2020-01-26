@@ -6,6 +6,9 @@ copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll.lib .\window
 copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll .\build\windows\x64\Debug\Runner\.
 copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll.pdb .\build\windows\x64\Debug\Runner\.
 
+Copy-Item -Recurse -Force ..\..\engine\src\out\host_debug_unopt\cpp_client_wrapper .\windows\flutter\ephemeral\.
+copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.h .\windows\flutter\ephemeral\.
+
 #copy the data into UWP
 Copy-Item -Recurse -Force .\build\windows\x64\Debug\Runner\data .\windowsuwp\x64\Debug\windowsuwp\AppX\Assets\.
 copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll .\windowsuwp\x64\Debug\windowsuwp\AppX\.

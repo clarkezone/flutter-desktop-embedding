@@ -73,7 +73,7 @@ int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE prev, wchar_t *command_line,
   Win32Window::Size size(kFlutterWindowWidth, kFlutterWindowHeight);
 
   flutter::FlutterViewController flutter_controller(
-      icu_data_path, size.width, size.height, assets_path, arguments);
+      icu_data_path, size.width, size.height, assets_path, arguments, nullptr);
   RegisterPlugins(&flutter_controller);
 
   // Create a top-level win32 window to host the Flutter view.

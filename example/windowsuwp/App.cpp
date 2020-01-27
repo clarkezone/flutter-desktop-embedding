@@ -1,11 +1,21 @@
+#include <concrt.h>
+#include <ppltasks.h>
 #include <windows.ui.composition.h>
+#include "winrt/Windows.ApplicationModel.Core.h"
+#include "winrt/Windows.UI.Core.h"
 
 #include "pch.h"
+#include "winrt/Windows.Foundation.h"
+#include "winrt/Windows.System.Threading.h"
+#include <chrono>
+#include <thread>
+
 using namespace winrt;
 using namespace Windows;
 using namespace Windows::ApplicationModel::Core;
 using namespace Windows::Foundation::Numerics;
 using namespace Windows::UI;
+using namespace Windows::Foundation;
 using namespace Windows::UI::Core;
 using namespace Windows::UI::Composition;
 
@@ -15,6 +25,8 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   Visual m_selected{nullptr};
   float2 m_offset{};
   Compositor m_compositor{nullptr};
+  IAsyncAction mRenderLoopWorker{nullptr};
+  //Concurrency::critical_section mRenderSurfaceCriticalSection;
 
   std::unique_ptr<flutter::FlutterViewController> m_flutterController{nullptr};
 
@@ -31,7 +43,42 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     window.Activate();
 
     CoreDispatcher dispatcher = window.Dispatcher();
+    StartMessagePump();
     dispatcher.ProcessEvents(CoreProcessEventsOption::ProcessUntilQuit);
+  }
+
+  void StartMessagePump() {
+    if (mRenderLoopWorker != nullptr &&
+        mRenderLoopWorker.Status() ==
+            Windows::Foundation::AsyncStatus::Started) {
+      return;
+    }
+
+     CoreWindow window = CoreWindow::GetForCurrentThread();
+    window.Activate();
+
+    CoreDispatcher dispatcher = window.Dispatcher();
+
+    auto workItemHandler = Windows::System::Threading::WorkItemHandler(
+        [this, dispatcher](Windows::Foundation::IAsyncAction action) {
+          //critical_section::scoped_lock lock(mRenderSurfaceCriticalSection);
+
+          while (action.Status() ==
+                 winrt::Windows::Foundation::AsyncStatus::Started) {
+
+              dispatcher.RunAsync(Windows::UI::Core::CoreDispatcherPriority::Normal,
+                                  [this, dispatcher]() {
+                                    if (m_flutterController != nullptr) {
+                                      m_flutterController->ProcessMessages();
+                                    }
+                  });
+           std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+          }
+        });
+
+    mRenderLoopWorker = Windows::System::Threading::ThreadPool::RunAsync(
+        workItemHandler, Windows::System::Threading::WorkItemPriority::Low,
+        Windows::System::Threading::WorkItemOptions::TimeSliced);
   }
 
   Windows::Foundation::IAsyncAction SetWindow(CoreWindow const &window) {
@@ -69,8 +116,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
         winrt::get_abi(m_compositor));
     void *pointer = m_flutterController->view()->GetVisual();
 
-    winrt::com_ptr<Windows::UI::Composition::ISpriteVisual> rawAbi =
-        nullptr;
+    winrt::com_ptr<Windows::UI::Composition::ISpriteVisual> rawAbi = nullptr;
 
     Windows::UI::Composition::ISpriteVisual abiFlutterVisual = nullptr;
 
@@ -83,8 +129,13 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
       m_visuals.InsertAtTop(flutterVisual);
     }
 
+    // window.Dispatcher().RunAsync(
+    //    Windows::UI::Core::CoreDispatcherPriority::Normal, [this]() {
+    //        //m_flutterController->ProcessMessages();
+    //    }
+    //);
 
-                           m_flutterController->ProcessMessages();
+    // m_flutterController->ProcessMessages();
   }
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {

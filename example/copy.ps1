@@ -22,3 +22,6 @@ copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll.exp .\window
 
 Copy-Item -Recurse -Force ..\..\engine\src\out\host_debug_unopt\cpp_client_wrapper .\windowsuwp\flutter\ephemeral\.
 copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.h .\windowsuwp\flutter\ephemeral\.
+copy-item ..\..\engine\src\out\host_debug_unopt\flutter_export.h .\windowsuwp\flutter\ephemeral\.
+copy-item ..\..\engine\src\out\host_debug_unopt\flutter_messenger.h .\windowsuwp\flutter\ephemeral\.
+copy-item ..\..\engine\src\out\host_debug_unopt\flutter_plugin_registrar.h .\windowsuwp\flutter\ephemeral\.

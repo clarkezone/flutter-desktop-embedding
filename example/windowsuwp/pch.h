@@ -8,6 +8,8 @@
 #include <winrt/Windows.UI.Core.h>
 #include <winrt/Windows.UI.Composition.h>
 #include <winrt/Windows.UI.Input.h>
+#include <winrt/Windows.UI.ViewManagement.h>
+#include <winrt/Windows.UI.ViewManagement.Core.h>
 #include <flutter_windows.h>
 #include <cpp_client_wrapper/include/flutter/flutter_view_controller.h>
 #include <memory>

@@ -33,7 +33,12 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
   IFrameworkView CreateView() { return *this; }
 
-  void Initialize(CoreApplicationView const &) {}
+  void Initialize(CoreApplicationView const &view) {
+
+
+    auto result = Windows::UI::ViewManagement::ApplicationViewScaling::
+        TrySetDisableLayoutScaling(true);
+  }
 
   void Load(hstring const &) {}
 
@@ -116,7 +121,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     //GetWindowBoundsPhysical(window);
 
     m_flutterController = std::make_unique<flutter::FlutterViewController>(
-        icu_data_path, 640, 480, flutter_assets_path, arguments,
+        icu_data_path, 1820, 1050, flutter_assets_path, arguments,
         winrt::get_abi(m_compositor));
     void *pointer = m_flutterController->view()->GetVisual();
 
@@ -142,6 +147,13 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     //);
 
     // m_flutterController->ProcessMessages();
+
+    auto appView =
+        Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
+
+     appView.SetDesiredBoundsMode(
+        Windows::UI::ViewManagement::ApplicationViewBoundsMode::UseCoreWindow);
+
   }
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {

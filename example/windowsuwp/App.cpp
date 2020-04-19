@@ -1,15 +1,16 @@
 #include <concrt.h>
 #include <ppltasks.h>
 #include <windows.ui.composition.h>
-#include "winrt/Windows.ApplicationModel.Core.h"
-#include "winrt/Windows.UI.Core.h"
+
+
 
 #include "pch.h"
+#include "winrt/Windows.ApplicationModel.Core.h"
 #include "winrt/Windows.Foundation.h"
 #include "winrt/Windows.System.Threading.h"
+#include "winrt/Windows.UI.Core.h"
 #include <chrono>
 #include <thread>
-
 using namespace winrt;
 using namespace Windows;
 using namespace Windows::ApplicationModel::Core;
@@ -22,11 +23,11 @@ using namespace Windows::UI::Composition;
 struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   CompositionTarget m_target{nullptr};
   VisualCollection m_visuals{nullptr};
-  Visual m_selected{nullptr};
+
   float2 m_offset{};
   Compositor m_compositor{nullptr};
   IAsyncAction mRenderLoopWorker{nullptr};
-  //Concurrency::critical_section mRenderSurfaceCriticalSection;
+  // Concurrency::critical_section mRenderSurfaceCriticalSection;
 
   std::unique_ptr<flutter::FlutterViewController> m_flutterController{nullptr};
 
@@ -54,25 +55,25 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
       return;
     }
 
-     CoreWindow window = CoreWindow::GetForCurrentThread();
+    CoreWindow window = CoreWindow::GetForCurrentThread();
     window.Activate();
 
     CoreDispatcher dispatcher = window.Dispatcher();
 
     auto workItemHandler = Windows::System::Threading::WorkItemHandler(
         [this, dispatcher](Windows::Foundation::IAsyncAction action) {
-          //critical_section::scoped_lock lock(mRenderSurfaceCriticalSection);
+          // critical_section::scoped_lock lock(mRenderSurfaceCriticalSection);
 
           while (action.Status() ==
                  winrt::Windows::Foundation::AsyncStatus::Started) {
-
-              dispatcher.RunAsync(Windows::UI::Core::CoreDispatcherPriority::Normal,
-                                  [this, dispatcher]() {
-                                    if (m_flutterController != nullptr) {
-                                      m_flutterController->ProcessMessages();
-                                    }
-                  });
-           std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            dispatcher.RunAsync(
+                Windows::UI::Core::CoreDispatcherPriority::Normal,
+                [this, dispatcher]() {
+                  if (m_flutterController != nullptr) {
+                    m_flutterController->ProcessMessages();
+                  }
+                });
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
           }
         });
 
@@ -91,8 +92,9 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     window.PointerPressed({this, &App::OnPointerPressed});
     window.PointerMoved({this, &App::OnPointerMoved});
+    window.SizeChanged({this, &App::OnSizeChanged});
 
-    window.PointerReleased([&](auto &&...) { m_selected = nullptr; });
+    window.PointerReleased([&](auto &&...) {});
 
     Windows::Storage::StorageFolder folder =
         Windows::ApplicationModel::Package::Current().InstalledLocation();
@@ -111,8 +113,10 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     std::vector<std::string> arguments;
 
+    //GetWindowBoundsPhysical(window);
+
     m_flutterController = std::make_unique<flutter::FlutterViewController>(
-        icu_data_path, 320, 240, flutter_assets_path, arguments,
+        icu_data_path, 640, 480, flutter_assets_path, arguments,
         winrt::get_abi(m_compositor));
     void *pointer = m_flutterController->view()->GetVisual();
 
@@ -129,6 +133,8 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
       m_visuals.InsertAtTop(flutterVisual);
     }
 
+    // m_flutterController->view()->SendWindowMetrics(640, 480);
+
     // window.Dispatcher().RunAsync(
     //    Windows::UI::Core::CoreDispatcherPriority::Normal, [this]() {
     //        //m_flutterController->ProcessMessages();
@@ -139,64 +145,22 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   }
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {
-    float2 const point = args.CurrentPoint().Position();
-
-    for (Visual visual : m_visuals) {
-      float3 const offset = visual.Offset();
-      float2 const size = visual.Size();
-
-      if (point.x >= offset.x && point.x < offset.x + size.x &&
-          point.y >= offset.y && point.y < offset.y + size.y) {
-        m_selected = visual;
-        m_offset.x = offset.x - point.x;
-        m_offset.y = offset.y - point.y;
-      }
-    }
-
-    if (m_selected) {
-      m_visuals.Remove(m_selected);
-      m_visuals.InsertAtTop(m_selected);
-    } else {
-      AddVisual(point);
-    }
+    // m_flutterController->view()->
   }
 
-  void OnPointerMoved(IInspectable const &, PointerEventArgs const &args) {
-    if (m_selected) {
-      float2 const point = args.CurrentPoint().Position();
+  void OnPointerMoved(IInspectable const &, PointerEventArgs const &args) {}
 
-      m_selected.Offset({point.x + m_offset.x, point.y + m_offset.y, 0.0f});
-    }
+  void OnSizeChanged(IInspectable const&, WindowSizeChangedEventArgs const& args) {
+    auto size = args.Size();
+    m_flutterController->view()->SendWindowMetrics(
+        static_cast<size_t>(size.Width), static_cast<size_t>(size.Height));
   }
 
-  void AddVisual(float2 const point) {
-    Compositor compositor = m_visuals.Compositor();
-    SpriteVisual visual = compositor.CreateSpriteVisual();
-
-    static Color colors[] = {{0xDC, 0x5B, 0x9B, 0xD5},
-                             {0xDC, 0xED, 0x7D, 0x31},
-                             {0xDC, 0x70, 0xAD, 0x47},
-                             {0xDC, 0xFF, 0xC0, 0x00}};
-
-    static unsigned last = 0;
-    unsigned const next = ++last % _countof(colors);
-    visual.Brush(compositor.CreateColorBrush(colors[next]));
-
-    float const BlockSize = 100.0f;
-
-    visual.Size({BlockSize, BlockSize});
-
-    visual.Offset({
-        point.x - BlockSize / 2.0f,
-        point.y - BlockSize / 2.0f,
-        0.0f,
-    });
-
-    m_visuals.InsertAtTop(visual);
-
-    m_selected = visual;
-    m_offset.x = -BlockSize / 2.0f;
-    m_offset.y = -BlockSize / 2.0f;
+  void GetWindowBoundsPhysical(CoreWindow const &window) {
+    Rect bounds = window.Bounds();
+    auto disp =
+        Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
+    float dpi = disp.LogicalDpi();
   }
 };
 

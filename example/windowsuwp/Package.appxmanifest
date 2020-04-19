@@ -1,13 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
   <Identity
-    Name="ac8877bb-bc2f-4898-995e-5852c2db67b5"
-    Publisher="CN=james"
-    Version="1.0.0.0" />
-  <mp:PhoneIdentity PhoneProductId="ac8877bb-bc2f-4898-995e-5852c2db67b5" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
+    Name="59186Clarkezone.FlutterUWPTestApp"
+    Publisher="CN=08EFF8A9-B3F8-4D5D-A945-E2CA5CEF1848"
+    Version="1.0.7.0" />
+  <mp:PhoneIdentity PhoneProductId="63e954b4-602f-4ada-a595-c12cf03a3e24" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
   <Properties>
-    <DisplayName>windowsuwp</DisplayName>
-    <PublisherDisplayName>james</PublisherDisplayName>
+    <DisplayName>FlutterUWPTestApp</DisplayName>
+    <PublisherDisplayName>ObjectivePixel</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
@@ -18,9 +18,10 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="windowsuwp.App">
-      <uap:VisualElements DisplayName="windowsuwp" Description="A project for a C++/WinRT Universal Windows Platform (UWP) app directly implementing CoreApplication"
+      <uap:VisualElements DisplayName="FlutterUWPTestApp" Description="A project for a C++/WinRT Universal Windows Platform (UWP) app directly implementing CoreApplication"
         Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" BackgroundColor="transparent">
         <uap:SplashScreen Image="Assets\SplashScreen.png" />
+        <uap:DefaultTile/>
       </uap:VisualElements>
     </Application>
   </Applications>

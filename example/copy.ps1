@@ -1,5 +1,6 @@
 #$sourcepath = '..\..\engine\src\out\host_debug_unopt\'
-$sourcepath = '..\..\engine\src\out\host_release\'
+#$sourcepath = '..\..\engine\src\out\host_release\'
+$sourcepath = 'C:\src\f\engine\src\out\host_debug\'
 
 $fdll = Join-Path -Path $sourcepath -ChildPath 'flutter_windows.dll'
 $fpdb = Join-Path -Path $sourcepath -ChildPath 'flutter_windows.dll.pdb'

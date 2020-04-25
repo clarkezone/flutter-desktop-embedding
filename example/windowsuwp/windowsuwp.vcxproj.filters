@@ -42,8 +42,56 @@
   <ItemGroup>
     <None Include="PropertySheet.props" />
     <None Include="packages.config" />
+    <None Include="flutter_windows.dll" />
+    <None Include="flutter_windows.dll.pdb" />
+    <None Include="windowsuwp_TemporaryKey.pfx" />
+    <None Include="Package.StoreAssociation.xml" />
+    <None Include="Assets\data\icudtl.dat">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\data\flutter_assets\FontManifest.json">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\data\flutter_assets\isolate_snapshot_data">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\data\flutter_assets\kernel_blob.bin">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\data\flutter_assets\vm_snapshot_data">
+      <Filter>Assets</Filter>
+    </None>
+    <None Include="Assets\data\flutter_assets\AssetManifest.json">
+      <Filter>Assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Text Include="readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\data\flutter_assets\packages\cupertino_icons\assets\CupertinoIcons.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\data\flutter_assets\fonts\MaterialIcons-Regular.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Medium.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Regular.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Thin.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Black.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Bold.ttf">
+      <Filter>Assets</Filter>
+    </Font>
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Light.ttf">
+      <Filter>Assets</Filter>
+    </Font>
   </ItemGroup>
 </Project>

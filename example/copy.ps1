@@ -1,11 +1,15 @@
-#$sourcepath = '..\..\engine\src\out\host_debug_unopt\'
-#$sourcepath = '..\..\engine\src\out\host_release\'
-$sourcepath = 'C:\src\f\engine\src\out\host_debug\'
+$sourcepath = '..\..\engine\src\out\host_debug_unopt\'
+#$sourcepath = 'C:\src\f\engine\src\out\host_debug\'
 
 $fdll = Join-Path -Path $sourcepath -ChildPath 'flutter_windows.dll'
 $fpdb = Join-Path -Path $sourcepath -ChildPath 'flutter_windows.dll.pdb'
 $fexp = Join-Path -Path $sourcepath -ChildPath 'flutter_windows.dll.exp'
 $flib = Join-Path -Path $sourcepath -ChildPath 'flutter_windows.dll.lib'
+$cwrapper = Join-Path -Path $sourcepath -ChildPath 'cpp_client_wrapper'
+$flutterwindowsh = Join-Path -Path $sourcepath -ChildPath 'flutter_windows.h'
+$flutterexport = Join-Path -Path $sourcepath -ChildPath 'flutter_export.h'
+$fluttermessenger = Join-Path -Path $sourcepath -ChildPath 'flutter_messenger.h'
+$flutterpluginregistar = Join-Path -Path $sourcepath -ChildPath 'flutter_plugin_registrar.h'
 
 # win32
 copy-item $fdll .\windows\flutter\ephemeral\.
@@ -14,8 +18,8 @@ copy-item $fexp .\windows\flutter\ephemeral\.
 copy-item $flib .\windows\flutter\ephemeral\.
 
 # win32 runner
-copy-item $fdll .\build\windows\x64\Debug\Runner\.
-copy-item $fpdb .\build\windows\x64\Debug\Runner\.
+#copy-item $fdll .\build\windows\x64\Debug\Runner\.
+#copy-item $fpdb .\build\windows\x64\Debug\Runner\.
 
 # uwp
 copy-item $flib .\windowsuwp\flutter\ephemeral\.
@@ -33,14 +37,14 @@ copy-item $fpdb .\windowsuwp\x64\Debug\windowsuwp\AppX\.
 #copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.dll.exp .\windowsuwp\x64\Debug\windowsuwp\AppX\.
 
 #copy the data into UWP
-Copy-Item -Recurse -Force .\build\windows\x64\Debug\Runner\data .\windowsuwp\x64\Debug\windowsuwp\AppX\Assets\.
+# Copy-Item -Recurse -Force .\build\windows\x64\Debug\Runner\data .\windowsuwp\x64\Debug\windowsuwp\AppX\Assets\.
 
 #source
-Copy-Item -Recurse -Force ..\..\engine\src\out\host_debug_unopt\cpp_client_wrapper .\windows\flutter\ephemeral\.
-copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.h .\windows\flutter\ephemeral\.
-Copy-Item -Recurse -Force ..\..\engine\src\out\host_debug_unopt\cpp_client_wrapper .\windowsuwp\flutter\ephemeral\.
-copy-item ..\..\engine\src\out\host_debug_unopt\flutter_windows.h .\windowsuwp\flutter\ephemeral\.
-copy-item ..\..\engine\src\out\host_debug_unopt\flutter_export.h .\windowsuwp\flutter\ephemeral\.
-copy-item ..\..\engine\src\out\host_debug_unopt\flutter_messenger.h .\windowsuwp\flutter\ephemeral\.
-copy-item ..\..\engine\src\out\host_debug_unopt\flutter_plugin_registrar.h .\windowsuwp\flutter\ephemeral\.
+Copy-Item -Recurse -Force $cwrapper .\windows\flutter\ephemeral\.
+copy-item $flutterwindowsh .\windows\flutter\ephemeral\.
+Copy-Item -Recurse -Force $cwrapper .\windowsuwp\flutter\ephemeral\.
+copy-item $flutterwindowsh .\windowsuwp\flutter\ephemeral\.
+copy-item $flutterexport .\windowsuwp\flutter\ephemeral\.
+copy-item $fluttermessenger .\windowsuwp\flutter\ephemeral\.
+copy-item $flutterpluginregistar .\windowsuwp\flutter\ephemeral\.
 

@@ -68,13 +68,23 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="PropertySheet.props" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros">
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundle>Always</AppxBundle>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <PackageCertificateThumbprint>58D8ED5EE5F47FAC587ACD02B8F02C825CE76A49</PackageCertificateThumbprint>
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LibraryPath>C:\Users\james\Source\f\flutter-desktop-embedding\example\windowsuwp\flutter\ephemeral;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>C:\Users\james\Source\f\flutter-desktop-embedding\example\windowsuwp\flutter\ephemeral;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);C:\Users\james\Source\f\flutter-desktop-embedding\example\windowsuwp\flutter\ephemeral;</IncludePath>
+    <LibraryPath>$(SolutionDir)flutter\ephemeral;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);$(SolutionDir)flutter\ephemeral</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -138,11 +148,49 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\data\flutter_assets\AssetManifest.json">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\data\flutter_assets\FontManifest.json">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\data\flutter_assets\isolate_snapshot_data">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\data\flutter_assets\kernel_blob.bin">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\data\flutter_assets\vm_snapshot_data">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="Assets\data\icudtl.dat">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
+    <None Include="flutter_windows.dll">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="flutter_windows.dll.pdb">
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+    </None>
     <None Include="packages.config" />
     <None Include="PropertySheet.props" />
+    <None Include="windowsuwp_TemporaryKey.pfx" />
     <Text Include="readme.txt">
       <DeploymentContent>false</DeploymentContent>
     </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Package.StoreAssociation.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Assets\data\flutter_assets\fonts\MaterialIcons-Regular.ttf" />
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Black.ttf" />
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Bold.ttf" />
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Light.ttf" />
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Medium.ttf" />
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Regular.ttf" />
+    <Font Include="Assets\data\flutter_assets\fonts\Roboto\Roboto-Thin.ttf" />
+    <Font Include="Assets\data\flutter_assets\packages\cupertino_icons\assets\CupertinoIcons.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

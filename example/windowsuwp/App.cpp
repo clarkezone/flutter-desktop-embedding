@@ -2,15 +2,15 @@
 #include <ppltasks.h>
 #include <windows.ui.composition.h>
 
-
-
 #include "pch.h"
 #include "winrt/Windows.ApplicationModel.Core.h"
 #include "winrt/Windows.Foundation.h"
 #include "winrt/Windows.System.Threading.h"
 #include "winrt/Windows.UI.Core.h"
-#include <chrono>
+
+#include <chrono>  //these should be at the bottom
 #include <thread>
+
 using namespace winrt;
 using namespace Windows;
 using namespace Windows::ApplicationModel::Core;
@@ -34,8 +34,6 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   IFrameworkView CreateView() { return *this; }
 
   void Initialize(CoreApplicationView const &view) {
-
-
     auto result = Windows::UI::ViewManagement::ApplicationViewScaling::
         TrySetDisableLayoutScaling(true);
   }
@@ -67,6 +65,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     auto workItemHandler = Windows::System::Threading::WorkItemHandler(
         [this, dispatcher](Windows::Foundation::IAsyncAction action) {
+          //TODO do we need to lock?
           // critical_section::scoped_lock lock(mRenderSurfaceCriticalSection);
 
           while (action.Status() ==
@@ -78,6 +77,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
                     m_flutterController->ProcessMessages();
                   }
                 });
+            //TODO can we do better?
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
           }
         });
@@ -96,8 +96,16 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     m_visuals = root.Children();
 
     window.PointerPressed({this, &App::OnPointerPressed});
+    window.PointerReleased({this, &App::OnPointerReleased});
     window.PointerMoved({this, &App::OnPointerMoved});
     window.SizeChanged({this, &App::OnSizeChanged});
+    //TODO mouse leave
+    //TODO scroll
+    //TODO fontchanged
+
+    window.KeyUp({this, &App::OnKeyUp});
+    window.KeyDown({this, &App::OnKeyDown});
+    window.CharacterReceived({this, &App::OnCharacterReceived});
 
     window.PointerReleased([&](auto &&...) {});
 
@@ -118,11 +126,14 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     std::vector<std::string> arguments;
 
-    //GetWindowBoundsPhysical(window);
+    // GetWindowBoundsPhysical(window);
 
     m_flutterController = std::make_unique<flutter::FlutterViewController>(
-        icu_data_path, 1820, 1050, flutter_assets_path, arguments,
+        icu_data_path, 720, 576, flutter_assets_path, arguments,
         winrt::get_abi(m_compositor));
+    /*m_flutterController = std::make_unique<flutter::FlutterViewController>(
+        icu_data_path, 1820, 1050, flutter_assets_path, arguments,
+        winrt::get_abi(m_compositor));*/
     void *pointer = m_flutterController->view()->GetVisual();
 
     winrt::com_ptr<Windows::UI::Composition::ISpriteVisual> rawAbi = nullptr;
@@ -151,21 +162,85 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     auto appView =
         Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
 
-     appView.SetDesiredBoundsMode(
+    appView.SetDesiredBoundsMode(
         Windows::UI::ViewManagement::ApplicationViewBoundsMode::UseCoreWindow);
-
   }
+
+  //// Translates button codes from Win32 API to FlutterPointerMouseButtons.
+  // static uint64_t ConvertWinButtonToFlutterButton(UINT button) {
+  //  switch (button) {
+  //    case WM_LBUTTONDOWN:
+  //    case WM_LBUTTONUP:
+  //      return kFlutterPointerButtonMousePrimary;
+  //    case WM_RBUTTONDOWN:
+  //    case WM_RBUTTONUP:
+  //      return kFlutterPointerButtonMouseSecondary;
+  //    case WM_MBUTTONDOWN:
+  //    case WM_MBUTTONUP:
+  //      return kFlutterPointerButtonMouseMiddle;
+  //    case XBUTTON1:
+  //      return kFlutterPointerButtonMouseBack;
+  //    case XBUTTON2:
+  //      return kFlutterPointerButtonMouseForward;
+  //  }
+  //  std::cerr << "Mouse button not recognized: " << button << std::endl;
+  //  return 0;
+  //}
 
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {
-    // m_flutterController->view()->
+    auto x = static_cast<double>(args.CurrentPoint().Position().X);
+    auto y = static_cast<double>(args.CurrentPoint().Position().Y);
+    m_flutterController->view()->SendPointerDown(x / static_cast<double>(1.2), y / static_cast<double>(1.2),
+        flutter::kFlutterPointerButtonMousePrimary);
   }
 
-  void OnPointerMoved(IInspectable const &, PointerEventArgs const &args) {}
+  void OnPointerReleased(IInspectable const &, PointerEventArgs const &args) {
+    auto x = static_cast<double>(args.CurrentPoint().Position().X);
+    auto y = static_cast<double>(args.CurrentPoint().Position().Y);
+    m_flutterController->view()->SendPointerUp(x / static_cast<double>(1.2), y / static_cast<double>(1.2),
+        flutter::kFlutterPointerButtonMousePrimary);
+  }
 
-  void OnSizeChanged(IInspectable const&, WindowSizeChangedEventArgs const& args) {
+  void OnPointerMoved(IInspectable const &, PointerEventArgs const &args) {
+    auto x = static_cast<double>(args.CurrentPoint().Position().X);
+    auto y = static_cast<double>(args.CurrentPoint().Position().Y);
+    m_flutterController->view()->SendPointerMove(x / static_cast<double>(1.2),
+                                                 y / static_cast<double>(1.2));
+  }
+
+  void OnSizeChanged(IInspectable const &,
+                     WindowSizeChangedEventArgs const &args) {
     auto size = args.Size();
     m_flutterController->view()->SendWindowMetrics(
         static_cast<size_t>(size.Width), static_cast<size_t>(size.Height));
+  }
+
+  void OnKeyUp(IInspectable const &, KeyEventArgs const &args) {
+      // TODO: system key (back) and unicode handling
+    auto status = args.KeyStatus();
+    unsigned int scancode = status.ScanCode;
+    int key = static_cast<int>(args.VirtualKey());
+    char32_t chararacter = static_cast<char32_t>(key);
+    int action = 0x0101;
+    m_flutterController->view()->SendKey(key, scancode, action, chararacter);
+  }
+
+  void OnKeyDown(IInspectable const &, KeyEventArgs const &args) {
+    // TODO: system key (back) and unicode handling
+    auto status = args.KeyStatus();
+    unsigned int scancode = status.ScanCode;
+    int key = static_cast<int>(args.VirtualKey());
+    char32_t chararacter = static_cast<char32_t>(key);
+    int action = 0x0100;
+    m_flutterController->view()->SendKey(key, scancode, action, chararacter);
+  }
+
+  void OnCharacterReceived(IInspectable const &,
+                      CharacterReceivedEventArgs const &args) {
+    auto key = args.KeyCode();
+    wchar_t keycode = static_cast<wchar_t>(key);
+    std::u16string text({keycode});
+    m_flutterController->view()->SendText(text);
   }
 
   void GetWindowBoundsPhysical(CoreWindow const &window) {

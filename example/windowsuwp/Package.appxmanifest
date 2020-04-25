@@ -3,7 +3,7 @@
   <Identity
     Name="59186Clarkezone.FlutterUWPTestApp"
     Publisher="CN=08EFF8A9-B3F8-4D5D-A945-E2CA5CEF1848"
-    Version="1.0.7.0" />
+    Version="1.0.12.0" />
   <mp:PhoneIdentity PhoneProductId="63e954b4-602f-4ada-a595-c12cf03a3e24" PhonePublisherId="00000000-0000-0000-0000-000000000000"/>
   <Properties>
     <DisplayName>FlutterUWPTestApp</DisplayName>

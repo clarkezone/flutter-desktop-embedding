@@ -65,7 +65,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     auto workItemHandler = Windows::System::Threading::WorkItemHandler(
         [this, dispatcher](Windows::Foundation::IAsyncAction action) {
-          //TODO do we need to lock?
+          // TODO do we need to lock?
           // critical_section::scoped_lock lock(mRenderSurfaceCriticalSection);
 
           while (action.Status() ==
@@ -77,7 +77,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
                     m_flutterController->ProcessMessages();
                   }
                 });
-            //TODO can we do better?
+            // TODO can we do better?
             std::this_thread::sleep_for(std::chrono::milliseconds(1000));
           }
         });
@@ -88,6 +88,15 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   }
 
   Windows::Foundation::IAsyncAction SetWindow(CoreWindow const &window) {
+    auto appView =
+        Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
+
+    appView.SetDesiredBoundsMode(
+        Windows::UI::ViewManagement::ApplicationViewBoundsMode::
+            UseCoreWindow);
+
+     appView.VisibleBoundsChanged({this, &App::OnBoundsChanged});
+
     Compositor compositor;
     m_compositor = compositor;
     ContainerVisual root = m_compositor.CreateContainerVisual();
@@ -98,10 +107,11 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     window.PointerPressed({this, &App::OnPointerPressed});
     window.PointerReleased({this, &App::OnPointerReleased});
     window.PointerMoved({this, &App::OnPointerMoved});
-    window.SizeChanged({this, &App::OnSizeChanged});
-    //TODO mouse leave
-    //TODO scroll
-    //TODO fontchanged
+    window.PointerWheelChanged({this, &App::OnPointerWheelChanged});
+
+    // TODO mouse leave
+    // TODO scroll
+    // TODO fontchanged
 
     window.KeyUp({this, &App::OnKeyUp});
     window.KeyDown({this, &App::OnKeyDown});
@@ -126,11 +136,13 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
 
     std::vector<std::string> arguments;
 
+    auto bounds = appView.VisibleBounds();
+
     // GetWindowBoundsPhysical(window);
 
     m_flutterController = std::make_unique<flutter::FlutterViewController>(
-        icu_data_path, 720, 576, flutter_assets_path, arguments,
-        winrt::get_abi(m_compositor));
+        icu_data_path, bounds.Width, bounds.Height, flutter_assets_path,
+        arguments, winrt::get_abi(m_compositor));
     /*m_flutterController = std::make_unique<flutter::FlutterViewController>(
         icu_data_path, 1820, 1050, flutter_assets_path, arguments,
         winrt::get_abi(m_compositor));*/
@@ -158,12 +170,6 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
     //);
 
     // m_flutterController->ProcessMessages();
-
-    auto appView =
-        Windows::UI::ViewManagement::ApplicationView::GetForCurrentView();
-
-    appView.SetDesiredBoundsMode(
-        Windows::UI::ViewManagement::ApplicationViewBoundsMode::UseCoreWindow);
   }
 
   //// Translates button codes from Win32 API to FlutterPointerMouseButtons.
@@ -190,33 +196,52 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   void OnPointerPressed(IInspectable const &, PointerEventArgs const &args) {
     auto x = static_cast<double>(args.CurrentPoint().Position().X);
     auto y = static_cast<double>(args.CurrentPoint().Position().Y);
-    m_flutterController->view()->SendPointerDown(x / static_cast<double>(1.2), y / static_cast<double>(1.2),
+    m_flutterController->view()->SendPointerDown(
+        x * static_cast<double>(1.0), y * static_cast<double>(1.0),
         flutter::kFlutterPointerButtonMousePrimary);
   }
 
   void OnPointerReleased(IInspectable const &, PointerEventArgs const &args) {
     auto x = static_cast<double>(args.CurrentPoint().Position().X);
     auto y = static_cast<double>(args.CurrentPoint().Position().Y);
-    m_flutterController->view()->SendPointerUp(x / static_cast<double>(1.2), y / static_cast<double>(1.2),
+    m_flutterController->view()->SendPointerUp(
+        x * static_cast<double>(1.0), y * static_cast<double>(1.0),
         flutter::kFlutterPointerButtonMousePrimary);
   }
 
   void OnPointerMoved(IInspectable const &, PointerEventArgs const &args) {
     auto x = static_cast<double>(args.CurrentPoint().Position().X);
     auto y = static_cast<double>(args.CurrentPoint().Position().Y);
-    m_flutterController->view()->SendPointerMove(x / static_cast<double>(1.2),
-                                                 y / static_cast<double>(1.2));
+    m_flutterController->view()->SendPointerMove(x * static_cast<double>(1.0),
+                                                 y * static_cast<double>(1.0));
   }
 
-  void OnSizeChanged(IInspectable const &,
-                     WindowSizeChangedEventArgs const &args) {
-    auto size = args.Size();
-    m_flutterController->view()->SendWindowMetrics(
-        static_cast<size_t>(size.Width), static_cast<size_t>(size.Height));
+  void OnPointerWheelChanged(IInspectable const&,
+      PointerEventArgs const& args) {
+    auto x = static_cast<double>(args.CurrentPoint().Position().X);
+    auto y = static_cast<double>(args.CurrentPoint().Position().Y);
+    //TODO this is broken
+    m_flutterController->view()->SendScroll(0,-10);
+  }
+
+  void OnBoundsChanged(Windows::UI::ViewManagement::ApplicationView const &appView,
+                       IInspectable const &) {
+    if (m_flutterController) {
+      auto bounds = appView.VisibleBounds();
+
+       auto disp =
+          Windows::Graphics::Display::DisplayInformation::GetForCurrentView();
+      float dpi = disp.LogicalDpi();
+
+      m_flutterController->view()->SendWindowMetrics(
+          static_cast<size_t>(bounds.Width),
+          static_cast<size_t>(bounds.Height),
+          dpi);
+    }
   }
 
   void OnKeyUp(IInspectable const &, KeyEventArgs const &args) {
-      // TODO: system key (back) and unicode handling
+    // TODO: system key (back) and unicode handling
     auto status = args.KeyStatus();
     unsigned int scancode = status.ScanCode;
     int key = static_cast<int>(args.VirtualKey());
@@ -236,7 +261,7 @@ struct App : implements<App, IFrameworkViewSource, IFrameworkView> {
   }
 
   void OnCharacterReceived(IInspectable const &,
-                      CharacterReceivedEventArgs const &args) {
+                           CharacterReceivedEventArgs const &args) {
     auto key = args.KeyCode();
     wchar_t keycode = static_cast<wchar_t>(key);
     std::u16string text({keycode});

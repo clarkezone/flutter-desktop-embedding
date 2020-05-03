@@ -14,6 +14,8 @@
 #ifndef PLUGINS_FILE_CHOOSER_WINDOWS_FILE_CHOOSER_PLUGIN_H_
 #define PLUGINS_FILE_CHOOSER_WINDOWS_FILE_CHOOSER_PLUGIN_H_
 
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
+
 // A plugin to allow resizing the window.
 
 #include <flutter_plugin_registrar.h>

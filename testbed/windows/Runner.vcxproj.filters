@@ -45,6 +45,18 @@
     <ClCompile Include="$(FLUTTER_EPHEMERAL_DIR)\cpp_client_wrapper\plugin_registrar.cc">
       <Filter>Source Files\Client Wrapper</Filter>
     </ClCompile>
+    <ClCompile Include="flutter\ephemeral\cpp_client_wrapper\dpi_utils_pub.cc">
+      <Filter>Source Files\Client Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="flutter\ephemeral\cpp_client_wrapper\win32_flutter_window_pub.cc">
+      <Filter>Source Files\Client Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="flutter\ephemeral\cpp_client_wrapper\win32_window_pub.cc">
+      <Filter>Source Files\Client Wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="runner\utils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="runner\run_loop.h">
@@ -65,17 +77,20 @@
     <ClInclude Include="flutter\generated_plugin_registrant.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="runner\utils.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Manifest Include="runner.exe.manifest" />
+    <Manifest Include="runner\runner.exe.manifest" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="Runner.rc">
+    <ResourceCompile Include="runner\Runner.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="resources\app_icon.ico">
+    <Image Include="runner\resources\app_icon.ico">
       <Filter>Resource Files</Filter>
     </Image>
   </ItemGroup>

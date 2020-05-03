@@ -6,6 +6,7 @@
 
 #include "flutter_window.h"
 #include "run_loop.h"
+#include "utils.h"
 #include "window_configuration.h"
 
 int APIENTRY wWinMain(_In_ HINSTANCE instance,
@@ -15,7 +16,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE instance,
   // Attach to console when present (e.g., 'flutter run') or create a
   // new console when running with a debugger.
   if (!::AttachConsole(ATTACH_PARENT_PROCESS) && ::IsDebuggerPresent()) {
-    ::AllocConsole();
+    CreateAndAttachConsole();
   }
 
   // Initialize COM, so that it is available for use in the library and/or plugins.

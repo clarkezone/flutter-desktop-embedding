@@ -12,8 +12,10 @@ void FlutterWindow::OnCreate() {
   Win32Window::OnCreate();
 
   // The size here is arbitrary since SetChildContent will resize it.
+
+  //TODO: conditionalize based on OS version
   flutter_controller_ =
-      std::make_unique<flutter::FlutterViewController>(100, 100, project_);
+      std::make_unique<flutter::FlutterViewController>(700, 700, project_, GetHandle());
   RegisterPlugins(flutter_controller_.get());
   run_loop_->RegisterFlutterInstance(flutter_controller_.get());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());

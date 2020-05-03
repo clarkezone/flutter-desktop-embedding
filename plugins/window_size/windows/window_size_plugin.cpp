@@ -18,6 +18,7 @@
 #include <windows.h>
 
 #include <VersionHelpers.h>
+#include <flutter/dpi_utils_pub.h>
 #include <flutter/flutter_view.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -69,7 +70,7 @@ EncodableValue GetPlatformChannelRepresentationForMonitor(HMONITOR monitor) {
   MONITORINFO info;
   info.cbSize = sizeof(MONITORINFO);
   GetMonitorInfo(monitor, &info);
-  UINT dpi = FlutterDesktopGetDpiForMonitor(monitor);
+  UINT dpi = flutter::pubdpi::GetDpiForMonitor(monitor);
   double scale_factor = dpi / kBaseDpi;
   return EncodableValue(EncodableMap{
       {EncodableValue(kFrameKey),
@@ -97,7 +98,7 @@ EncodableValue GetPlatformChannelRepresentationForWindow(HWND window) {
   RECT frame;
   GetWindowRect(window, &frame);
   HMONITOR window_monitor = MonitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY);
-  double scale_factor = FlutterDesktopGetDpiForHWND(window) / kBaseDpi;
+  double scale_factor = flutter::pubdpi::GetDpiForHWND(window) / kBaseDpi;
 
   return EncodableValue(EncodableMap{
       {EncodableValue(kFrameKey),

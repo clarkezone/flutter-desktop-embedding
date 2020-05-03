@@ -41,5 +41,14 @@
     <ClCompile Include="$(FlutterPluginName)_plugin.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\cpp_client_wrapper\win32_flutter_window_pub.cc">
+      <Filter>Source Files\cpp_client_wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\cpp_client_wrapper\win32_window_pub.cc">
+      <Filter>Source Files\cpp_client_wrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\cpp_client_wrapper\dpi_utils_pub.cc">
+      <Filter>Source Files\cpp_client_wrapper</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

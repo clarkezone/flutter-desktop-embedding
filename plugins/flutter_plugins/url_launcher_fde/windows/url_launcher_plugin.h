@@ -13,7 +13,7 @@
 // limitations under the License.
 #ifndef PLUGINS_URL_LAUNCHER_PLUGIN_WINDOWS_H_
 #define PLUGINS_URL_LAUNCHER_PLUGIN_WINDOWS_H_
-
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 #include <flutter_plugin_registrar.h>
 
 #ifdef FLUTTER_PLUGIN_IMPL

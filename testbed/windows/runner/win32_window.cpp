@@ -1,5 +1,5 @@
 #include "win32_window.h"
-
+#include "cpp_client_wrapper/include/flutter/dpi_utils_pub.h"
 #include <flutter_windows.h>
 
 #include "resource.h"
@@ -113,7 +113,8 @@ bool Win32Window::CreateAndShow(const std::wstring& title,
   const POINT target_point = {static_cast<LONG>(origin.x),
                               static_cast<LONG>(origin.y)};
   HMONITOR monitor = MonitorFromPoint(target_point, MONITOR_DEFAULTTONEAREST);
-  UINT dpi = FlutterDesktopGetDpiForMonitor(monitor);
+  
+  UINT dpi = flutter::pubdpi::GetDpiForMonitor(monitor);
   double scale_factor = dpi / 96.0;
 
   HWND window = CreateWindow(

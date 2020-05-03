@@ -13,7 +13,7 @@
 // limitations under the License.
 #ifndef PLUGINS_WINDOW_SIZE_WINDOWS_WINDOW_SIZE_PLUGIN_H_
 #define PLUGINS_WINDOW_SIZE_WINDOWS_WINDOW_SIZE_PLUGIN_H_
-
+#define _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING
 // A plugin to allow resizing the window.
 
 #include <flutter_plugin_registrar.h>

@@ -15,7 +15,7 @@ void FlutterWindow::OnCreate() {
 
   //TODO: conditionalize based on OS version
   flutter_controller_ =
-      std::make_unique<flutter::FlutterViewController>(700, 700, project_, GetHandle());
+      std::make_unique<flutter::Win32FlutterViewController>(700, 700, project_, GetHandle());
   RegisterPlugins(flutter_controller_.get());
   run_loop_->RegisterFlutterInstance(flutter_controller_.get());
   SetChildContent(flutter_controller_->view()->GetNativeWindow());

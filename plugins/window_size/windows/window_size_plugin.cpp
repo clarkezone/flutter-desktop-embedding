@@ -19,7 +19,7 @@
 
 #include <VersionHelpers.h>
 #include <flutter/dpi_utils_pub.h>
-#include <flutter/flutter_view.h>
+#include <flutter/win32_flutter_view.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
@@ -109,7 +109,7 @@ EncodableValue GetPlatformChannelRepresentationForWindow(HWND window) {
   });
 }
 
-HWND GetRootWindow(flutter::FlutterView *view) {
+HWND GetRootWindow(flutter::Win32FlutterView *view) {
   return GetAncestor(view->GetNativeWindow(), GA_ROOT);
 }
 

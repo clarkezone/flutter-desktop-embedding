@@ -279,7 +279,7 @@ void ShowDialog(
 }
 
 // Returns the top-level window that owns |view|.
-HWND GetRootWindow(flutter::FlutterView *view) {
+HWND GetRootWindow(flutter::Win32FlutterView *view) {
   return GetAncestor(view->GetNativeWindow(), GA_ROOT);
 }
 

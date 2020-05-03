@@ -47,12 +47,12 @@ void RunLoop::Run() {
 }
 
 void RunLoop::RegisterFlutterInstance(
-    flutter::FlutterViewController* flutter_instance) {
+    flutter::Win32FlutterViewController* flutter_instance) {
   flutter_instances_.insert(flutter_instance);
 }
 
 void RunLoop::UnregisterFlutterInstance(
-    flutter::FlutterViewController* flutter_instance) {
+    flutter::Win32FlutterViewController* flutter_instance) {
   flutter_instances_.erase(flutter_instance);
 }
 

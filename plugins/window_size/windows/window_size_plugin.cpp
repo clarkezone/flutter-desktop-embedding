@@ -69,7 +69,7 @@ EncodableValue GetPlatformChannelRepresentationForMonitor(HMONITOR monitor) {
   MONITORINFO info;
   info.cbSize = sizeof(MONITORINFO);
   GetMonitorInfo(monitor, &info);
-  UINT dpi = FlutterDesktopGetDpiForMonitor(monitor);
+  UINT dpi = flutter::pubdpi::GetDpiForMonitor(monitor);
   double scale_factor = dpi / kBaseDpi;
   return EncodableValue(EncodableMap{
       {EncodableValue(kFrameKey),
@@ -97,7 +97,7 @@ EncodableValue GetPlatformChannelRepresentationForWindow(HWND window) {
   RECT frame;
   GetWindowRect(window, &frame);
   HMONITOR window_monitor = MonitorFromWindow(window, MONITOR_DEFAULTTOPRIMARY);
-  double scale_factor = FlutterDesktopGetDpiForHWND(window) / kBaseDpi;
+  double scale_factor = flutter::pubdpi::GetDpiForHWND(window) / kBaseDpi;
 
   return EncodableValue(EncodableMap{
       {EncodableValue(kFrameKey),
@@ -109,7 +109,7 @@ EncodableValue GetPlatformChannelRepresentationForWindow(HWND window) {
 }
 
 HWND GetRootWindow(flutter::FlutterView *view) {
-  return GetAncestor(view->GetNativeWindow(), GA_ROOT);
+  return view->GetHostNativeWindow();
 }
 
 class WindowSizePlugin : public flutter::Plugin {

@@ -280,7 +280,7 @@ void ShowDialog(
 
 // Returns the top-level window that owns |view|.
 HWND GetRootWindow(flutter::FlutterView *view) {
-  return GetAncestor(view->GetNativeWindow(), GA_ROOT);
+  return GetAncestor(view->GetHostNativeWindow(), GA_ROOT);
 }
 
 class FileChooserPlugin : public flutter::Plugin {

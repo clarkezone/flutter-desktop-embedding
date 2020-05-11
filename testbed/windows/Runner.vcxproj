@@ -224,6 +224,7 @@
     </CustomBuildStep>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="flutter\ephemeral\cpp_client_wrapper\dpi_utils_pub.cc" />
     <ClCompile Include="runner\main.cpp" />
     <ClCompile Include="flutter\generated_plugin_registrant.cc" />
     <ClCompile Include="runner\run_loop.cpp" />
